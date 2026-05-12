@@ -1,121 +1,84 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
+import AdminProfile from './components/AdminProfile';
+import CustomerDetail from './components/CustomerDetail';
+import Summarize from './components/Summarize'; 
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [page, setPage] = useState('login'); 
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+  const [adminData, setAdminData] = useState({
+    nama: 'Admin Churn Center',
+    email: 'admin@churncenter.id',
+    password: 'admin', 
+    foto: null 
+  });
+  const handleViewDetail = (customer) => {
+    setSelectedCustomer(customer);
+    setPage('detail');
+  };
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      {/*HALAMAN DASHBOARD */}
+      {page === 'dashboard' && (
+        <Dashboard 
+          adminData={adminData} 
+          onLogout={() => setPage('login')} 
+          onProfileClick={() => setPage('profile')}
+          onViewDetail={handleViewDetail}
+          onNavChange={setPage} 
+        />
+      )}
 
-      <div className="ticks"></div>
+      {/* HALAMAN SUMMARIZE */}
+      {page === 'summarize' && (
+        <Summarize 
+          adminData={adminData}
+          onLogout={() => setPage('login')}
+          onProfileClick={() => setPage('profile')}
+          onNavChange={setPage} 
+        />
+      )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      {/*HALAMAN PROFIL */}
+      {page === 'profile' && (
+        <AdminProfile 
+          adminData={adminData}
+          setAdminData={setAdminData}
+          onBack={() => setPage('dashboard')} 
+          onLogout={() => setPage('login')}
+        />
+      )}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+      {/*HALAMAN DETAIL CUSTOMER */}
+      {page === 'detail' && (
+        <CustomerDetail 
+          customer={selectedCustomer}
+          adminData={adminData}
+          onBack={() => setPage('dashboard')} 
+          onLogout={() => setPage('login')}
+          onProfileClick={() => setPage('profile')}
+        />
+      )}
+
+      {/* HALAMAN AUTH (LOGIN) */}
+      {(page === 'login' || page === 'register' || page === 'forget') && (
+        <div className="page-wrapper">
+          {page === 'login' && (
+            <Login 
+              adminData={adminData}
+              onLoginSuccess={() => setPage('dashboard')} 
+            />
+          )}
+          {/* Tambahkan Register/ForgetPassword di sini jika filenya sudah ada */}
+        </div>
+      )}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
