@@ -1,0 +1,17 @@
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 1.4rem;
+  color: #333;
+  font-family: "Poppins", sans-serif;
+}
+
+.user-actions {
+  display: flex;
+  gap: 12px;
+}
