@@ -1,10 +1,8 @@
-// sama bagian ini tolong agak dirapihin sedikit biar sama kek di desain, trus juga nontifikasi tolong banget
-// itu udh gua buat setengah tapii gua binggung euyy
-
 import { useState, useMemo } from 'react';
 import logo from '../assets/logoChurn.png';
 
 function Dashboard({ onLogout, onProfileClick, adminData, onViewDetail, onNavChange }) {
+  // 1. DATA DUMMY (40 Data)
   const allData = useMemo(() => {
     const plans = ['Starter', 'Enterprise', 'Professional'];
     const risks = ['Low', 'Medium', 'High'];
@@ -22,11 +20,13 @@ function Dashboard({ onLogout, onProfileClick, adminData, onViewDetail, onNavCha
     }));
   }, []);
 
+  // 2. STATES
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showNotif, setShowNotif] = useState(false);
   const itemsPerPage = 8; 
 
+  // 3. LOGIKA FILTER & PAGINATION
   const filteredData = allData.filter(item => 
     item.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -34,6 +34,7 @@ function Dashboard({ onLogout, onProfileClick, adminData, onViewDetail, onNavCha
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentItems = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
+  // 4. STATISTIK OTOMATIS
   const stayedCount = allData.filter(item => item.churn === 'No').length;
   const churnedCount = allData.filter(item => item.churn === 'Yes').length;
   const lowRiskCount = allData.filter(item => item.risk === 'Low').length;
@@ -51,27 +52,28 @@ function Dashboard({ onLogout, onProfileClick, adminData, onViewDetail, onNavCha
 
   return (
     <div className="dashboard-wrapper">
+      {/* SIDEBAR */}
       <aside className="sidebar-new">
         <div className="sidebar-header">
           <img src={logo} alt="Logo" className="logo-img" />
           <hr className="divider" />
         </div>
         <nav className="nav-menu">
-          {/* DASHBOARD ICON */}
+          {/* Menu Dashboard (Active) */}
           <div className="nav-link active" style={{ cursor: 'pointer' }}>
             <span className="icon-svg">
               <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#630000" d="m16 11.78l4.24-7.33l1.73 1l-5.23 9.05l-6.51-3.75L5.46 19H22v2H2V3h2v14.54L9.5 8z"/></svg>
             </span> Dashboard
           </div>
-          
-          {/* TAMBAH CUSTOMER ICON */}
-          <div className="nav-link" style={{ cursor: 'pointer' }}>
+
+          {/* Menu Tambah Customer (Navigasi Berfungsi) */}
+          <div className="nav-link" onClick={() => onNavChange('tambah')} style={{ cursor: 'pointer' }}>
             <span className="icon-svg">
               <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#630000" d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z"/></svg>
             </span> Tambah Customer
           </div>
-          
-          {/* SUMMARIZE ICON */}
+
+          {/* Menu Summarize (Navigasi Berfungsi) */}
           <div className="nav-link" onClick={() => onNavChange('summarize')} style={{ cursor: 'pointer' }}>
             <span className="icon-svg">
               <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#630000" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h11l5 5v11q0 .825-.587 1.413T19 21zm3.713-4.288Q9 16.426 9 16t-.288-.712T8 15t-.712.288T7 16t.288.713T8 17t.713-.288m0-4Q9 12.425 9 12t-.288-.712T8 11t-.712.288T7 12t.288.713T8 13t.713-.288m0-4Q9 8.426 9 8t-.288-.712T8 7t-.712.288T7 8t.288.713T8 9t.713-.288M15 9h4l-4-4z"/></svg>
@@ -85,11 +87,13 @@ function Dashboard({ onLogout, onProfileClick, adminData, onViewDetail, onNavCha
         <header className="top-bar">
           <h1 className="title">Dashboard</h1>
           <div className="user-actions" style={{ position: 'relative' }}>
+            {/* ICON LONCENG */}
             <span className="notif-svg" onClick={() => setShowNotif(!showNotif)} style={{ cursor: 'pointer', position: 'relative' }}>
               <svg width="24" height="24" viewBox="0 0 24 24"><path fill="#630000" d="M1 20v-2.946c1.993-.656 2.575-2.158 3.668-6.077.897-3.218 1.891-6.784 4.873-8.023-.027-.147-.041-.299-.041-.454 0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5c0 .156-.014.309-.042.458 2.987 1.244 3.984 4.813 4.884 8.033 1.103 3.95 1.697 5.423 3.658 6.062v2.947h-7c0 2.208-1.792 4-4 4s-4-1.792-4-4h-7z"/></svg>
               {highRiskCount > 0 && <span className="notif-badge"></span>}
             </span>
 
+            {/* DROPDOWN NOTIFIKASI */}
             {showNotif && (
               <div className="notif-dropdown shadow-real-black">
                 <div className="notif-header"><h4>Notification</h4></div>
@@ -106,13 +110,14 @@ function Dashboard({ onLogout, onProfileClick, adminData, onViewDetail, onNavCha
                 </div>
               </div>
             )}
+            {/* AVATAR ADMIN */}
             <span className="profile-svg" onClick={onProfileClick} style={{ cursor: 'pointer' }}>
-                {adminData?.foto ? <img src={adminData.foto} className="avatar-img-small" alt="p" /> : "👤"}
+                {adminData?.foto ? <img src={adminData.foto} className="avatar-img-small" alt="profile" /> : "👤"}
             </span>
           </div>
         </header>
 
-        {/* STATS, PLAN TYPE, TOOLS, TABLE */}
+        {/* STATS */}
         <div className="stats-container">
           <div className="card churn-card">
             <h3>Churn Status</h3>
@@ -134,6 +139,7 @@ function Dashboard({ onLogout, onProfileClick, adminData, onViewDetail, onNavCha
           </div>
         </div>
 
+        {/* PLAN TYPE */}
         <div className="card plan-card-new">
           <h3>Plan Type Category</h3>
           {planStats.map((plan) => (
@@ -145,6 +151,7 @@ function Dashboard({ onLogout, onProfileClick, adminData, onViewDetail, onNavCha
           ))}
         </div>
 
+        {/* SEARCH TOOLS */}
         <div className="table-header-tools" style={{ marginTop: '20px' }}>
           <div className="search-bar-new">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#630000" width="18" height="18" style={{ marginRight: '8px' }}>
@@ -154,6 +161,7 @@ function Dashboard({ onLogout, onProfileClick, adminData, onViewDetail, onNavCha
           </div>
         </div>
 
+        {/* DATA TABLE */}
         <div className="table-wrapper">
           <table className="custom-table">
             <thead>
@@ -176,6 +184,7 @@ function Dashboard({ onLogout, onProfileClick, adminData, onViewDetail, onNavCha
           </table>
         </div>
 
+        {/* PAGINATION */}
         <div className="pagination-new">
           <div className="pages">
             <span onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} style={{ cursor: 'pointer' }}>‹</span>

@@ -938,3 +938,111 @@ th {
   color: #333;
   line-height: 1.5;
 }
+
+/* tambah cuustomer */
+
+.form-container {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.form-input {
+  padding: 10px 15px;
+  /* Border warna abu-abu gelap biar tegas kayak gambar kanan */
+  border: 1px solid #767676; 
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.85rem;
+  width: 100%;
+  box-sizing: border-box;
+  
+  /* Efek bayangan hitam tipis (drop shadow) di bagian bawah */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  
+  transition: all 0.2s ease-in-out;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 300px; /* Jarak sesuai desain antar tombol */
+  margin-top: 40px;
+}
+
+.btn-submit {
+  background: #C5B399; /* Warna krem sesuai desain */
+  color: #333;
+  padding: 12px 60px;
+  border-radius: 12px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  min-width: 250px;
+}
+
+.btn-cancel {
+  background: #630000; /* Warna marun sesuai desain */
+  color: white;
+  padding: 12px 60px;
+  border-radius: 12px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  min-width: 250px;
+}
+
+.form-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 30px 0;
+  color: #999;
+  font-size: 0.7rem;
+}
+
+.form-divider::before, .form-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #eee;
+}
+
+.form-divider span {
+  padding: 0 10px;
+}
+
+.form-upload {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-excel {
+  background: #212529; /* Hitam gelap sesuai desain */
+  color: white;
+  padding: 10px 100px;
+  border-radius: 12px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}

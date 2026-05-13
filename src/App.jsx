@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import AdminProfile from './components/AdminProfile';
 import CustomerDetail from './components/CustomerDetail';
 import Summarize from './components/Summarize'; 
+import TambahCustomer from './components/TambahCustomer'; // 1. TAMBAHKAN IMPORT INI
 
 function App() {
   const [page, setPage] = useState('login'); 
@@ -16,6 +17,7 @@ function App() {
     password: 'admin', 
     foto: null 
   });
+
   const handleViewDetail = (customer) => {
     setSelectedCustomer(customer);
     setPage('detail');
@@ -23,7 +25,7 @@ function App() {
 
   return (
     <>
-      {/*HALAMAN DASHBOARD */}
+      {/* 2. HALAMAN DASHBOARD */}
       {page === 'dashboard' && (
         <Dashboard 
           adminData={adminData} 
@@ -34,7 +36,17 @@ function App() {
         />
       )}
 
-      {/* HALAMAN SUMMARIZE */}
+      {/* 3. HALAMAN TAMBAH CUSTOMER */}
+      {page === 'tambah' && (
+        <TambahCustomer 
+          adminData={adminData}
+          onLogout={() => setPage('login')}
+          onProfileClick={() => setPage('profile')}
+          onNavChange={setPage} 
+        />
+      )}
+
+      {/* 4. HALAMAN SUMMARIZE */}
       {page === 'summarize' && (
         <Summarize 
           adminData={adminData}
@@ -44,7 +56,7 @@ function App() {
         />
       )}
 
-      {/*HALAMAN PROFIL */}
+      {/* 5. HALAMAN PROFIL */}
       {page === 'profile' && (
         <AdminProfile 
           adminData={adminData}
@@ -54,7 +66,7 @@ function App() {
         />
       )}
 
-      {/*HALAMAN DETAIL CUSTOMER */}
+      {/* 6. HALAMAN DETAIL CUSTOMER */}
       {page === 'detail' && (
         <CustomerDetail 
           customer={selectedCustomer}
@@ -65,7 +77,7 @@ function App() {
         />
       )}
 
-      {/* HALAMAN AUTH (LOGIN) */}
+      {/* 7. HALAMAN AUTH (LOGIN) */}
       {(page === 'login' || page === 'register' || page === 'forget') && (
         <div className="page-wrapper">
           {page === 'login' && (
@@ -74,7 +86,6 @@ function App() {
               onLoginSuccess={() => setPage('dashboard')} 
             />
           )}
-          {/* Tambahkan Register/ForgetPassword di sini jika filenya sudah ada */}
         </div>
       )}
     </>
