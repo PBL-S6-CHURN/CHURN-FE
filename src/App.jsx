@@ -1,83 +1,55 @@
-import { useState } from 'react';
-import './App.css';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
-import AdminProfile from './components/AdminProfile';
-import CustomerDetail from './components/CustomerDetail';
-import Summarize from './components/Summarize'; 
+import { useMemo, useState } from "react";
+import { BrowserRouter } from "react-router-dom";
+import "./App.css";
+import Router from "./Router";
 
 function App() {
-  const [page, setPage] = useState('login'); 
+  const [page, setPage] = useState("login");
   const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   const [adminData, setAdminData] = useState({
-    nama: 'Admin Churn Center',
-    email: 'admin@churncenter.id',
-    password: 'admin', 
-    foto: null 
+    nama: "Admin Churn Center",
+    email: "  ",
+    password: "admin",
+    foto: null,
   });
-  const handleViewDetail = (customer) => {
-    setSelectedCustomer(customer);
-    setPage('detail');
-  };
+
+  // --- DATA SENTRAL (Agar Dashboard & Summarize sinkron) ---
+  const allData = useMemo(() => {
+    const plans = ["Starter", "Enterprise", "Professional"];
+    const risks = ["Low", "Medium", "High"];
+    return Array.from({ length: 40 }, (_, i) => ({
+      id: `C-00${(i + 1).toString().padStart(2, "0")}`,
+      plan: plans[Math.floor(Math.random() * plans.length)],
+      contract: Math.random() > 0.5 ? "Monthly" : "Annual",
+      users: Math.floor(Math.random() * 50) + 5,
+      hours: (Math.random() * 200 + 20).toFixed(2),
+      feature: (Math.random() * 100).toFixed(1),
+      delay: Math.floor(Math.random() * 10),
+      score: Math.floor(Math.random() * 100),
+      risk: risks[Math.floor(Math.random() * risks.length)],
+      churn: Math.random() > 0.5 ? "Yes" : "No",
+    }));
+  }, []);
+
+  const highRiskCustomers = useMemo(
+    () => allData.filter((c) => c.risk === "High"),
+    [allData]
+  );
 
   return (
-    <>
-      {/*HALAMAN DASHBOARD */}
-      {page === 'dashboard' && (
-        <Dashboard 
-          adminData={adminData} 
-          onLogout={() => setPage('login')} 
-          onProfileClick={() => setPage('profile')}
-          onViewDetail={handleViewDetail}
-          onNavChange={setPage} 
-        />
-      )}
-
-      {/* HALAMAN SUMMARIZE */}
-      {page === 'summarize' && (
-        <Summarize 
-          adminData={adminData}
-          onLogout={() => setPage('login')}
-          onProfileClick={() => setPage('profile')}
-          onNavChange={setPage} 
-        />
-      )}
-
-      {/*HALAMAN PROFIL */}
-      {page === 'profile' && (
-        <AdminProfile 
+    <BrowserRouter>
+      <div className="app-container">
+        <Router
           adminData={adminData}
           setAdminData={setAdminData}
-          onBack={() => setPage('dashboard')} 
-          onLogout={() => setPage('login')}
+          allData={allData}
+          highRiskCustomers={highRiskCustomers}
+          selectedCustomer={selectedCustomer}
+          setSelectedCustomer={setSelectedCustomer}
         />
-      )}
-
-      {/*HALAMAN DETAIL CUSTOMER */}
-      {page === 'detail' && (
-        <CustomerDetail 
-          customer={selectedCustomer}
-          adminData={adminData}
-          onBack={() => setPage('dashboard')} 
-          onLogout={() => setPage('login')}
-          onProfileClick={() => setPage('profile')}
-        />
-      )}
-
-      {/* HALAMAN AUTH (LOGIN) */}
-      {(page === 'login' || page === 'register' || page === 'forget') && (
-        <div className="page-wrapper">
-          {page === 'login' && (
-            <Login 
-              adminData={adminData}
-              onLoginSuccess={() => setPage('dashboard')} 
-            />
-          )}
-          {/* Tambahkan Register/ForgetPassword di sini jika filenya sudah ada */}
-        </div>
-      )}
-    </>
+      </div>
+    </BrowserRouter>
   );
 }
 

@@ -36,13 +36,22 @@
     font-weight: bold;
 }
 
+.nav-link:hover {
+    background-color: #fcf8f8;
+    color: #630000;
+}
+
 .btn-logout-new {
     margin: 20px;
     padding: 10px;
     background-color: #630000;
     color: white;
     border: none;
-    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius: 12px;
     cursor: pointer;
     font-weight: bold;
 }

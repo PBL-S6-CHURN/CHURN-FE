@@ -1,0 +1,206 @@
+/* =============================================================
+   1. LAYOUT UTAMA & CONTAINERS
+   ============================================================= */
+.detail-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.detail-top-section {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* Breadcrumb Styling */
+.breadcrumb-wrapper span {
+  font-family: "Poppins", sans-serif !important;
+  cursor: pointer;
+}
+
+/* =============================================================
+     2. CARD FOTO (SISI KIRI)
+     ============================================================= */
+.detail-card-photo {
+  flex: 0 0 300px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-avatar-icon {
+  width: 280px; /* Sedikit dikecilkan agar tidak terlalu mepet */
+  height: 280px;
+  color: #630000;
+}
+
+.status-text {
+  color: #630000;
+  margin-top: 20px;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+/* =============================================================
+     3. INFO BOX COMPONENT (GRID KANAN)
+     ============================================================= */
+.detail-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.info-box {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 90px;
+}
+
+.info-box.full-width {
+  grid-column: span 3;
+}
+
+.info-label {
+  font-size: 0.7rem;
+  font-family: "Poppins", sans-serif;
+  color: #999;
+  font-weight: 600;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.info-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.info-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: "Inter", sans-serif !important;
+  color: #333;
+  margin: 0;
+}
+
+.info-unit {
+  font-size: 0.75rem;
+  color: #630000;
+  font-weight: 600;
+  font-family: "Inter", sans-serif !important;
+}
+
+/* =============================================================
+     4. PREDICTION SECTION
+     ============================================================= */
+.prediction-card {
+  background: white;
+  border: 1px solid #eeebdd;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.prediction-grid {
+  display: flex;
+  gap: 15px;
+}
+
+.predict-box {
+  flex: 1;
+  background: #eeebdd;
+  border: 1px solid #d3cdbc;
+  border-radius: 10px;
+  padding: 15px;
+  min-height: 110px;
+}
+
+.predict-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  font-family: "Inter", sans-serif !important;
+  color: #444;
+  text-transform: uppercase;
+}
+
+.predict-value-risk {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #630000;
+  margin: 0;
+}
+
+.predict-value-text {
+  font-size: 0.8rem;
+  color: #555;
+  font-family: "Inter", sans-serif !important;
+  line-height: 1.5;
+}
+
+/* =============================================================
+     5. CONTACT SECTION & BUTTONS
+     ============================================================= */
+.contact-section {
+  padding: 0 20px;
+  margin-top: 10px;
+}
+
+.contact-header {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.contact-btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding-bottom: 40px;
+}
+
+.contact-btn {
+  width: 240px;
+  height: 50px;
+  border-radius: 50px;
+  border: 1px solid #c5bea9;
+  background: #d3cdbc;
+  color: #333;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.contact-btn:hover {
+  filter: brightness(0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}

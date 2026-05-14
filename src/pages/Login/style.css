@@ -1,0 +1,89 @@
+/* Kartu Login*/
+.login-card {
+  background-color: #630000;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 8px;
+  padding: 40px 25px;
+  text-align: center;
+  color: white;
+}
+
+/* Sign in */
+.signin-title {
+  font-weight: 500;
+  font-size: 1.5rem;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  font-family: "Poppins", sans-serif;
+  color: white;
+}
+
+/* Input Group */
+.input-group {
+  text-align: left;
+  margin-bottom: 10px;
+  font-family: "Inter", sans-serif;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 5px;
+  color: #ffffff;
+}
+
+/* Wrapper untuk Input + Icon */
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 10px 10px 10px 10px;
+  border-radius: 6px;
+}
+
+/* Styling Input Field */
+.input-wrapper input {
+  margin-left: 10px;
+  width: 100%;
+  color: black;
+  font-size: 0.95rem;
+  outline: none;
+  border: none;
+  background: none;
+}
+
+/* sign in */
+.sign-in-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  background-color: white;
+  color: #630000;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.input-wrapper input::placeholder {
+  color: #777;
+}
+
+.input-icon {
+  font-size: 1.1rem;
+  color: black;
+}
+
+/* Placeholder warna */
+.eye-icon {
+  font-size: 1rem;
+  color: #ccc;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sign-in-btn:hover {
+  background-color: #ffffff;
+}
