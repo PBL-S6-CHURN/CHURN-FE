@@ -3,6 +3,7 @@ import "../Login/style.css";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "../../layouts/AuthLayout";
 import { Icon } from "@iconify/react";
+import { register } from "../../api/authApi";
 
 function Register() {
   const [username, setUsername] = useState("");
@@ -12,14 +13,26 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  const handleRegister = async(e) => {
     e.preventDefault();
+    try {
+      if (password !== confirmPassword) {
+        alert("Password tidak cocok!");
+        return;
+      }
 
-    //Validasi Password
-    if (password !== confirmPassword) {
-      alert("Password tidak cocok!");
-      return;
+      // Simulasi register berhasil (Opsional)
+      await register(username, email, password);
+
+      alert("Akun berhasil dibuat! Silakan login kembali.");
+
+      navigate("/login");
+
+    } catch (err) {
+      // Melempar error agar bisa ditangkap oleh komponen UI
+      throw err.response?.data?.message || 'Terjadi kesalahan saat registrasi';
     }
+    //Validasi Password
 
     console.log("Data Register Berhasil:", { username, email, password });
 
@@ -85,7 +98,7 @@ function Register() {
                 style={{ cursor: "pointer" }}
               >
                 {showPassword ? (
-                 <Icon icon="material-symbols:visibility" width="15" height="15" color="#D1D1D1" />
+                  <Icon icon="material-symbols:visibility" width="15" height="15" color="#D1D1D1" />
                 ) : (
                   <Icon icon="material-symbols:visibility-off" width="15" height="15" color="#D1D1D1" />
                 )}

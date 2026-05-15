@@ -1,38 +1,59 @@
 import { useState } from "react";
 import AuthLayout from "../../layouts/AuthLayout";
 import { useNavigate } from "react-router-dom";
+import logo from "../../assets/logoChurn.png";
 import { Icon } from "@iconify/react";
-import './style.css';
+import "./style.css";
+import { login } from "../../api/authApi";
 
-function Login({ onForget, onLoginSuccess }) {
+function Login({ onForget, setAdminData, adminData }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     console.log("Login Data:", { email, password });
 
-    // Simulasi login berhasil (Opsional)
-    navigate("/dashboard");
+    try {
+      // Simulasi login berhasil (Opsional)
+      const data = await login(email, password);
+
+      const token = data.data.accessToken;
+      localStorage.setItem("token", token);
+
+      setAdminData(data.data);
+      setError("");
+
+      navigate("/dashboard");
+    } catch (error) {
+      setError("Terjadi kesalahan saat login. Silakan coba lagi.", error);
+    }
   };
 
   return (
     <AuthLayout>
       <div className="login-card">
         <div className="logo-circle">
-          <img src="/src/assets/logoChurn.png" alt="Logo" />
+          <img src={logo} alt="Logo" />
         </div>
 
         <h2 className="signin-title">Sign in</h2>
 
         <form onSubmit={handleLogin}>
           {/* Input Email */}
+          {error && <div className="error-message">{error}</div>}
           <div className="input-group">
             <label htmlFor="email">Email</label>
             <div className="input-wrapper">
-              <Icon icon="material-symbols:mail" width="25" height="25" color="#000000" />
+              <Icon
+                icon="material-symbols:mail"
+                width="25"
+                height="25"
+                color="#000000"
+              />
               <input
                 type="email"
                 id="email"
@@ -48,7 +69,12 @@ function Login({ onForget, onLoginSuccess }) {
           <div className="input-group">
             <label htmlFor="password">Password</label>
             <div className="input-wrapper">
-            <Icon icon="material-symbols:lock" width="24" height="24" color="#000000" />
+              <Icon
+                icon="material-symbols:lock"
+                width="24"
+                height="24"
+                color="#000000"
+              />
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
@@ -63,9 +89,19 @@ function Login({ onForget, onLoginSuccess }) {
                 style={{ cursor: "pointer" }}
               >
                 {showPassword ? (
-                  <Icon icon="mdi:eye-outline" width="20" height="20" color="#D1D1D1" />
+                  <Icon
+                    icon="mdi:eye-outline"
+                    width="20"
+                    height="20"
+                    color="#D1D1D1"
+                  />
                 ) : (
-                  <Icon icon="mdi:eye-off-outline" width="20" height="20" color="#D1D1D1" />
+                  <Icon
+                    icon="mdi:eye-off-outline"
+                    width="20"
+                    height="20"
+                    color="#D1D1D1"
+                  />
                 )}
               </span>
             </div>

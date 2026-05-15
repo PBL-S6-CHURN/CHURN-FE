@@ -4,7 +4,7 @@ import logo from '../../assets/logoChurn.png'
 import { Icon } from '@iconify/react';
 import './style.css'
 
-export default function Sidebar() {
+export default function Sidebar({ onLogout }) {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -43,7 +43,9 @@ export default function Sidebar() {
                 </div>
                 ))}
             </nav>
-            <button className="btn-logout-new" onClick={() => navigate('/login')}>
+            <button className="btn-logout-new" onClick={() => {
+                onLogout();
+            }}>
             <Icon icon="material-symbols:logout-rounded" width="24" height="24"  color='#ffffff'/>
                 Logout
             </button>

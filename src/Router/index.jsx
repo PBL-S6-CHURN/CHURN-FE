@@ -1,5 +1,6 @@
 import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
+import ProtectedRoute from "./protectedRoute";
 
 // pages
 import Dashboard from "../pages/Dashboard";
@@ -17,66 +18,82 @@ export default function Router({
   highRiskCustomers,
   selectedCustomer,
   setSelectedCustomer,
+  handleLogout
 }) {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/login" element={<Login adminData={adminData} />} />
+      <Route path="/login" element={<Login adminData={adminData} setAdminData={setAdminData} />} />
       <Route path="/register" element={<Register />} />
 
       {/* Private Routes */}
       <Route
         path="/dashboard"
         element={
-          <Dashboard
-            allData={allData}
-            adminData={adminData}
-            highRiskCustomers={highRiskCustomers}
-            onViewDetail={setSelectedCustomer}
-          />
+          <ProtectedRoute>
+            <Dashboard
+              allData={allData}
+              adminData={adminData}
+              highRiskCustomers={highRiskCustomers}
+              onViewDetail={setSelectedCustomer}
+              handleLogout={handleLogout}
+            />
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="/summarize"
         element={
-          <Summarize
-            adminData={adminData}
-            highRiskCustomers={highRiskCustomers}
-            onViewDetail={setSelectedCustomer}
-          />
+          <ProtectedRoute>
+            <Summarize
+              adminData={adminData}
+              highRiskCustomers={highRiskCustomers}
+              onViewDetail={setSelectedCustomer}
+              handleLogout={handleLogout}
+            />
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="/profile"
         element={
-          <AdminProfile
-            adminData={adminData}
-            setAdminData={setAdminData}
-            highRiskCustomers={highRiskCustomers}
-          />
+          <ProtectedRoute>
+            <AdminProfile
+              adminData={adminData}
+              setAdminData={setAdminData}
+              highRiskCustomers={highRiskCustomers}
+              handleLogout={handleLogout}
+            />
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="/add-customer"
         element={
-          <TambahCustomer
-            adminData={adminData}
-            highRiskCustomers={highRiskCustomers}
-          />
+          <ProtectedRoute>
+            <TambahCustomer
+              adminData={adminData}
+              highRiskCustomers={highRiskCustomers}
+              handleLogout={handleLogout}
+            />
+          </ProtectedRoute>
         }
       />
 
       <Route
-        path="/detail"
+        path="/detail/:id"
         element={
-          <CustomerDetail
-            customer={selectedCustomer}
-            adminData={adminData}
-            highRiskCustomers={highRiskCustomers}
-          />
+          <ProtectedRoute>
+            <CustomerDetail
+              customer={selectedCustomer}
+              adminData={adminData}
+              highRiskCustomers={highRiskCustomers}
+              handleLogout={handleLogout}
+            />
+          </ProtectedRoute>
         }
       />
 

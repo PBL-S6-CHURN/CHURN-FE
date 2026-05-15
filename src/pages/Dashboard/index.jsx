@@ -1,17 +1,56 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import MainLayout from "../../layouts/MainLayout/";
 import { Icon } from "@iconify/react";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
+import { getCustomers, getCustomersByType, getCustomerStats, searchCustomers } from "../../api/customerApi";
 
 function Dashboard({
-  onLogout,
   onProfileClick,
   adminData,
   onViewDetail,
   onNavChange,
+  handleLogout
 }) {
+  const [customers, setCustomers] = useState([]);
+  const [planStats, setPlanStats] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const getData = async () => {
+    setLoading(true);
+    try {
+      let response;
+
+      if (searchTerm) {
+        response = await searchCustomers(searchTerm, currentPage);
+      } else if(selectedType) {
+        response = await getCustomersByType(selectedType, currentPage) 
+      } else {
+        response = await getCustomers(currentPage);
+      }
+
+      setCustomers(response.data);
+      setTotalPages(response.metadata.total_pages);
+    } catch (error) {
+      // Melempar error agar bisa ditangkap oleh komponen UI
+      throw error.response?.data?.message || "Terjadi kesalahan saat mengambil data pelanggan";
+    }
+  }
+
+  const getStatsData = async () => {
+    try {
+      const response = await getCustomerStats();
+      setPlanStats(response.data.message);
+    } catch (error) {
+      // Melempar error agar bisa ditangkap oleh komponen UI
+      throw error.response?.data?.message || "Terjadi kesalahan saat mengambil data statistik pelanggan";
+    }
+  }
 
   const allData = useMemo(() => {
     const plans = ["Starter", "Enterprise", "Professional"];
@@ -34,49 +73,35 @@ function Dashboard({
     }));
   }, []);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
-
-  const filteredData = allData.filter((item) =>
-    item.id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const currentItems = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
   const stayedCount = allData.filter((item) => item.churn === "No").length;
   const churnedCount = allData.filter((item) => item.churn === "Yes").length;
   const lowRiskCount = allData.filter((item) => item.risk === "Low").length;
   const medRiskCount = allData.filter((item) => item.risk === "Medium").length;
   const highRiskCount = allData.filter((item) => item.risk === "High").length;
 
-  const planStats = useMemo(() => {
-    const categories = ["Starter", "Enterprise", "Professional"];
-    return categories.map((planName) => {
-      const count = allData.filter((item) => item.plan === planName).length;
-      const percentage =
-        allData.length > 0 ? ((count / allData.length) * 100).toFixed(0) : 0;
-      return { name: planName, count, percentage };
-    });
-  }, [allData]);
+  useEffect(() => {
+    getStatsData();
+  }, []);
 
-  const highRiskCustomers = useMemo(
-    () => allData.filter((c) => c.risk === "High"),
-    [allData]
-  );
+  // Jalankan setiap kali currentPage berubah
+  useEffect(() => {
+    // Memberikan sedikit jeda (debounce) agar tidak menembak API setiap huruf diketik
+    const delayDebounce = setTimeout(() => {
+      getData();
+    }, 500); // 500ms jeda
+
+    return () => clearTimeout(delayDebounce);
+  }, [currentPage, searchTerm, selectedType]);
+
 
   return (
     <MainLayout
       title="Dashboard"
       activeNav="dashboard"
       onNavChange={onNavChange}
-      onLogout={onLogout}
+      onLogout={handleLogout}
       adminData={adminData}
-      highRiskCustomers={highRiskCustomers}
+      highRiskCustomers={[]}
       onViewDetail={onViewDetail}
       onProfileClick={onProfileClick}
     >
@@ -120,10 +145,10 @@ function Dashboard({
       <div className="card plan-card-new">
         <h3>Plan Type Category</h3>
         {planStats.map((plan) => (
-          <div key={plan.name} className="plan-item">
+          <div className="plan-item">
             <div className="plan-info">
-              <span>{plan.name}</span>
-              <span>{plan.count} Customer</span>
+              <span>{plan.plan_name}</span>
+              <span>{plan.total_count} Customer</span>
             </div>
             <div className="progress-container">
               <div
@@ -131,7 +156,7 @@ function Dashboard({
                 style={{ width: `${plan.percentage}%` }}
               ></div>
             </div>
-            <span className="percent">{plan.percentage}%</span>
+            <span className="percent">{Math.round(plan.percentage)}%</span>
           </div>
         ))}
       </div>
@@ -155,8 +180,15 @@ function Dashboard({
           />
         </div>
         <div class="custom-select">
-          <select>
-            <option value="" disabled selected>
+          <select
+            value={selectedType}
+            onChange={(e) => {
+              setSelectedType(e.target.value)
+              setSearchTerm('')
+              setCurrentPage(1)
+            }}
+          >
+            <option value="" selected>
               Filter by Plan Type
             </option>
             <option value="starter">Starter</option>
@@ -168,7 +200,7 @@ function Dashboard({
 
         <div class="custom-select">
           <select>
-            <option value="" disabled selected>
+            <option value="" selected>
               Filter by Risk
             </option>
             <option value="low">Low</option>
@@ -200,35 +232,40 @@ function Dashboard({
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((row) => (
+            {customers.map((row) => (
               <tr key={row.id}>
                 <td
                   style={{ cursor: "pointer" }}
                   onClick={() => {
                     onViewDetail(row);
-                    navigate(`/detail`);
+                    navigate(`/detail/${row.id}`);
                   }}
                   className="clickable-id"
                 >
-                  {row.id}
+                  {row.customer_id}
                 </td>
-                <td>{row.plan}</td>
-                <td>{row.contract}</td>
-                <td className="text-center">{row.tenure}m</td>
-                <td className="text-center">${row.revenue}</td>
-                <td className="text-center">{row.users}</td>
-                <td className="text-center">{row.hours}h</td>
-                <td className="text-center">{row.feature}%</td>
-                <td className="text-center">{row.delay}</td>
-                <td className="text-center">{row.support}</td>
-                <td className="text-center">{row.nps}</td>
-                <td className="text-center">{row.score}</td>
-                <td
+                <td>{row.plan_name}</td>
+                <td>{row.contract_name}</td>
+                <td className="text-center">{row.tenure_months} m</td>
+                <td className="text-center">${row.monthly_revenue}</td>
+                <td className="text-center">{row.total_users}</td>
+                <td className="text-center">{row.monthly_usage_hrs}h</td>
+                <td className="text-center">{row.feature_adoption_pct} %</td>
+                <td className="text-center">{row.payment_delay_count}</td>
+                <td className="text-center">{row.support_ticket_last_90d}</td>
+                <td className="text-center">{row.nps_score}</td>
+                <td className="text-center">100</td>
+                {/* <td
                   className={`text-center risk-text ${row.risk.toLowerCase()}`}
                 >
-                  {row.risk}
+                  high
+                </td> */}
+                <td
+                  className={`text-center risk-text high`}
+                >
+                  High
                 </td>
-                <td className="text-center">{row.churn}</td>
+                <td className="text-center">Yes</td>
               </tr>
             ))}
           </tbody>

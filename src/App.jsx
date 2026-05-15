@@ -1,18 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import "./App.css";
 import Router from "./Router";
 
 function App() {
-  const [page, setPage] = useState("login");
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-
-  const [adminData, setAdminData] = useState({
-    nama: "Admin Churn Center",
-    email: "  ",
-    password: "admin",
-    foto: null,
-  });
+  const [adminData, setAdminData] = useState(null);
 
   // --- DATA SENTRAL (Agar Dashboard & Summarize sinkron) ---
   const allData = useMemo(() => {
@@ -37,6 +30,21 @@ function App() {
     [allData]
   );
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setAdminData(null);
+    window.location.href = "/login";
+  };
+
+  useEffect(() => {
+    const storedAdminData = localStorage.getItem("token");
+    if (storedAdminData && !adminData) {
+      setAdminData({
+        authenticated: true
+      });
+    }
+  }, []);
+
   return (
     <BrowserRouter>
       <div className="app-container">
@@ -44,6 +52,7 @@ function App() {
           adminData={adminData}
           setAdminData={setAdminData}
           allData={allData}
+          handleLogout={handleLogout}
           highRiskCustomers={highRiskCustomers}
           selectedCustomer={selectedCustomer}
           setSelectedCustomer={setSelectedCustomer}
