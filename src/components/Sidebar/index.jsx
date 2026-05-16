@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../../assets/logoChurn.png'
 import { Icon } from '@iconify/react';
 import './style.css'
+import { logout } from '../../api/authApi';
 
 export default function Sidebar({ onLogout }) {
     const navigate = useNavigate();
@@ -15,7 +16,21 @@ export default function Sidebar({ onLogout }) {
         }
         // Untuk menu lainnya tetap sama (strict match)
         return location.pathname === itemId;
-    };;
+    };
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } catch (err) {
+            console.log(err);
+            console.error("Backend logout failed:", err);
+            // Tetap lanjutkan pembersihan di frontend meskipun backend error/expired
+        } finally {
+            localStorage.removeItem("token");
+            localStorage.removeItem("token-refresh");
+            navigate("/login");
+        }
+    }
     
     const menuItems = [
         { id: '/dashboard', label: 'Dashboard', icon: 'material-symbols:dashboard-outline' },
@@ -44,7 +59,7 @@ export default function Sidebar({ onLogout }) {
                 ))}
             </nav>
             <button className="btn-logout-new" onClick={() => {
-                onLogout();
+                handleLogout();
             }}>
             <Icon icon="material-symbols:logout-rounded" width="24" height="24"  color='#ffffff'/>
                 Logout

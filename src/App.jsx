@@ -30,11 +30,11 @@ function App() {
     [allData]
   );
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setAdminData(null);
-    window.location.href = "/login";
-  };
+  // const handleLogout = () => {
+  //   localStorage.removeItem("token");
+  //   setAdminData(null);
+  //   window.location.href = "/login";
+  // };
 
   useEffect(() => {
     const storedAdminData = localStorage.getItem("token");
@@ -52,7 +52,6 @@ function App() {
           adminData={adminData}
           setAdminData={setAdminData}
           allData={allData}
-          handleLogout={handleLogout}
           highRiskCustomers={highRiskCustomers}
           selectedCustomer={selectedCustomer}
           setSelectedCustomer={setSelectedCustomer}

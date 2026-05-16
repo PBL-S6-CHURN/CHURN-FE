@@ -22,7 +22,9 @@ function Login({ onForget, setAdminData, adminData }) {
       const data = await login(email, password);
 
       const token = data.data.accessToken;
+      const tokenRefresh = data.data.refreshToken;
       localStorage.setItem("token", token);
+      localStorage.setItem("token-refresh", tokenRefresh);
 
       setAdminData(data.data);
       setError("");

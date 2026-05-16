@@ -1,16 +1,22 @@
 import { useState, useMemo, useEffect } from "react";
 import MainLayout from "../../layouts/MainLayout/";
-import { Icon } from "@iconify/react";
 import "./style.css";
-import { useNavigate } from "react-router-dom";
 import { getCustomers, getCustomersByType, getCustomerStats, searchCustomers } from "../../api/customerApi";
+
+// kompulan component
+import ChurnStatusCountCard from "../../components/DashboardComponents/ChurnStatusCountCard";
+import RiskCountChurn from "../../components/DashboardComponents/RiskCountChurn";
+import PlanPercentageCard from "../../components/DashboardComponents/PlanPercentageCard";
+import CustomerTable from "../../components/DashboardComponents/CustomerTable";
+import Pagination from "../../components/DashboardComponents/Pagination";
+import SearchInput from "../../components/DashboardComponents/SearchInput";
+import CustomSelect from "../../components/DashboardComponents/CustomSelect";
 
 function Dashboard({
   onProfileClick,
   adminData,
   onViewDetail,
-  onNavChange,
-  handleLogout
+  onNavChange
 }) {
   const [customers, setCustomers] = useState([]);
   const [planStats, setPlanStats] = useState([]);
@@ -18,8 +24,21 @@ function Dashboard({
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
+  const [selectedRisk, setSelectedRisk] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  // Data opsi untuk Plan Type
+  const planOptions = [
+    { value: "starter", label: "Starter" },
+    { value: "professional", label: "Professional" },
+    { value: "enterprise", label: "Enterprise" },
+  ];
+
+  // Data opsi untuk Risk (bisa dikembangkan nanti statenya)
+  const riskOptions = [
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Medium" },
+    { value: "high", label: "High" },
+  ];
 
   const getData = async () => {
     setLoading(true);
@@ -99,7 +118,6 @@ function Dashboard({
       title="Dashboard"
       activeNav="dashboard"
       onNavChange={onNavChange}
-      onLogout={handleLogout}
       adminData={adminData}
       highRiskCustomers={[]}
       onViewDetail={onViewDetail}
@@ -110,34 +128,17 @@ function Dashboard({
         <div className="card churn-card">
           <h3>Churn Status</h3>
           <div className="churn-content">
-            <div className="churn-box-white">
-              <span>Stayed</span>
-              <span className="number">{stayedCount}</span>
-            </div>
-            <div className="churn-box-maroon">
-              <span>Churned</span>
-              <span className="number">{churnedCount}</span>
-            </div>
+            <ChurnStatusCountCard styleCard="churn-box-white" titleCount="Stayed" countChurn={stayedCount} />
+            <ChurnStatusCountCard styleCard="churn-box-maroon" titleCount="Churned" countChurn={churnedCount} />
           </div>
         </div>
         <div class="risk-card">
           <div class="risk-header">Risk Category Count</div>
 
           <div class="risk-sections-container">
-            <div class="risk-section">
-              <span class="risk-label low">Low</span>
-              <span class="risk-count">{lowRiskCount}</span>
-            </div>
-
-            <div class="risk-section">
-              <span class="risk-label medium">Medium</span>
-              <span class="risk-count">{medRiskCount}</span>
-            </div>
-
-            <div class="risk-section">
-              <span class="risk-label high">High</span>
-              <span class="risk-count">{highRiskCount}</span>
-            </div>
+            <RiskCountChurn colorRisk="low" titleRisk="Low" countRisk={lowRiskCount} />
+            <RiskCountChurn colorRisk="medium" titleRisk="Medium" countRisk={medRiskCount} />
+            <RiskCountChurn colorRisk="high" titleRisk="High" countRisk={highRiskCount} />
           </div>
         </div>
       </div>
@@ -145,166 +146,18 @@ function Dashboard({
       <div className="card plan-card-new">
         <h3>Plan Type Category</h3>
         {planStats.map((plan) => (
-          <div className="plan-item">
-            <div className="plan-info">
-              <span>{plan.plan_name}</span>
-              <span>{plan.total_count} Customer</span>
-            </div>
-            <div className="progress-container">
-              <div
-                className="progress-bar-maroon"
-                style={{ width: `${plan.percentage}%` }}
-              ></div>
-            </div>
-            <span className="percent">{Math.round(plan.percentage)}%</span>
-          </div>
+          <PlanPercentageCard plan_name={plan.plan_name} total_count={plan.total_count} percentage={plan.percentage} />
         ))}
       </div>
 
       <div className="table-header-tools" style={{ marginTop: "50px" }}>
-        <div className="search-bar-new">
-          <Icon
-            icon="material-symbols:search"
-            width="24"
-            height="24"
-            color="#610000"
-          />
-          <input
-            type="text"
-            placeholder="Search ID..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-          />
-        </div>
-        <div class="custom-select">
-          <select
-            value={selectedType}
-            onChange={(e) => {
-              setSelectedType(e.target.value)
-              setSearchTerm('')
-              setCurrentPage(1)
-            }}
-          >
-            <option value="" selected>
-              Filter by Plan Type
-            </option>
-            <option value="starter">Starter</option>
-            <option value="professional">Professional</option>
-            <option value="enterprise">Enterprise</option>
-          </select>
-          <span class="custom-arrow"></span>
-        </div>
-
-        <div class="custom-select">
-          <select>
-            <option value="" selected>
-              Filter by Risk
-            </option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-          <span class="custom-arrow"></span>
-        </div>
+        <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} setCurrentPage={setCurrentPage} iconSearch="material-symbols:search" />
+        <CustomSelect value={selectedType} onChange={(e) => setSelectedType(e.target.value)} options={planOptions} defaultLabel="Filter by Plan Type" />
+        <CustomSelect value={selectedRisk} onChange={(e) => setSelectedRisk(e.target.value)} options={riskOptions} defaultLabel="Filter by Risk" />
       </div>
 
-      <div className="table-wrapper">
-        <table className="custom-table">
-          <thead>
-            <tr>
-              <th>Customer_id</th>
-              <th>Plan Type</th>
-              <th>Contract Type</th>
-              <th>Tenure Months</th>
-              <th>Monthly Revenue</th>
-              <th>Total Users</th>
-              <th>Monthly Usage Hours</th>
-              <th>Feature Adoption Pct</th>
-              <th>Payment Delay Count</th>
-              <th>Support Tickets Last 90d</th>
-              <th>NPS Score</th>
-              <th>Score</th>
-              <th>Risk</th>
-              <th>Churn</th>
-            </tr>
-          </thead>
-          <tbody>
-            {customers.map((row) => (
-              <tr key={row.id}>
-                <td
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    onViewDetail(row);
-                    navigate(`/detail/${row.id}`);
-                  }}
-                  className="clickable-id"
-                >
-                  {row.customer_id}
-                </td>
-                <td>{row.plan_name}</td>
-                <td>{row.contract_name}</td>
-                <td className="text-center">{row.tenure_months} m</td>
-                <td className="text-center">${row.monthly_revenue}</td>
-                <td className="text-center">{row.total_users}</td>
-                <td className="text-center">{row.monthly_usage_hrs}h</td>
-                <td className="text-center">{row.feature_adoption_pct} %</td>
-                <td className="text-center">{row.payment_delay_count}</td>
-                <td className="text-center">{row.support_ticket_last_90d}</td>
-                <td className="text-center">{row.nps_score}</td>
-                <td className="text-center">100</td>
-                {/* <td
-                  className={`text-center risk-text ${row.risk.toLowerCase()}`}
-                >
-                  high
-                </td> */}
-                <td
-                  className={`text-center risk-text high`}
-                >
-                  High
-                </td>
-                <td className="text-center">Yes</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="pagination-new">
-        <div className="pages">
-          <span
-            className="nav-arrow"
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            style={{ cursor: "pointer" }}
-          >
-            ‹
-          </span>
-          {[...Array(totalPages)].map((_, i) => (
-            <span
-              key={i + 1}
-              onClick={() => setCurrentPage(i + 1)}
-              className={currentPage === i + 1 ? "active-p" : ""}
-              style={{ cursor: "pointer" }}
-            >
-              {i + 1}
-            </span>
-          ))}
-          <span
-            className="nav-arrow"
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            style={{ cursor: "pointer" }}
-          >
-            ›
-          </span>
-        </div>
-        <div className="page-info">
-          Page {currentPage} of {totalPages || 1}
-        </div>
-      </div>
+      <CustomerTable customers={customers} onViewDetail={onViewDetail} />
+      <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
     </MainLayout>
   );
 }

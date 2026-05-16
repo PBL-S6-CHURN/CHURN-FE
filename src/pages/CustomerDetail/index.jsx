@@ -8,7 +8,7 @@ import ContactButton from "../../components/CustomerDetailComponents/ContactButt
 import { useParams } from "react-router-dom";
 import { getCustomerById } from "../../api/customerApi";
 
-function CustomerDetail({ onBack, onLogout, adminData, onProfileClick, onNavChange, highRiskCustomers }) {
+function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange, highRiskCustomers }) {
   const { id } = useParams();
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -34,7 +34,6 @@ function CustomerDetail({ onBack, onLogout, adminData, onProfileClick, onNavChan
     return (
       <MainLayout
         adminData={adminData}
-        onLogout={onLogout}
         onProfileClick={onProfileClick}
         activeNav="dashboard"
         onNavChange={onNavChange}
@@ -56,7 +55,6 @@ function CustomerDetail({ onBack, onLogout, adminData, onProfileClick, onNavChan
     <MainLayout
       adminData={adminData}
       title={breadcrumbContent}
-      onLogout={onLogout}
       onProfileClick={onProfileClick}
       activeNav="dashboard"
       onNavChange={onNavChange}

@@ -1,14 +1,14 @@
-// tolong dibagian profile itu masih agak berantakan, kayak buttonya belom sama, trus foto profilenya udh bisa keubah 
-// tapi kalo di klik icon profil cuma pas kalo posisinya di dashbord fotonya belum keubah, tolong ya siapapun itu 
-
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import logo from '../../assets/logoChurn.png';
 import MainLayout from '../../layouts/MainLayout';
+import { getProfile } from '../../api/userApi';
 
 function AdminProfile({ adminData, setAdminData, onLogout, onNavChange, highRiskCustomers, onProfileClick }) {
   const fileInputRef = useRef(null);
+  const [profile, setProfile] = useState("");
   const [isEditingPw, setIsEditingPw] = useState(false);
-  const [tempPw, setTempPw] = useState(adminData.password);
+  // const [tempPw, setTempPw] = useState(adminData.password);
+  const [loading, setLoading] = useState(true);
 
   //Upload Foto
   const handlePhotoUpload = (e) => {
@@ -29,6 +29,38 @@ function AdminProfile({ adminData, setAdminData, onLogout, onNavChange, highRisk
     alert("Password berhasil diperbarui!");
   };
 
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        setLoading(true);
+        const response = await getProfile();
+        const userData = response.data;
+        setAdminData(userData.message);
+        // setProfile(userData.foto);
+        // setTempPw(userData.password || "");
+        setLoading(false);
+
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProfileData();
+  }, [])
+
+  // Tampilan Loading
+  if (loading) {
+    return (
+      <MainLayout title="Profil Admin" activeNav="profile" onNavChange={onNavChange} onLogout={onLogout} adminData={adminData} onProfileClick={onProfileClick} highRiskCustomers={highRiskCustomers}>
+        <div style={{ textAlign: 'center', marginTop: '50px', color: '#630000' }}>
+          <h3>Memuat data profil...</h3>
+        </div>
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout
       title="Profil Admin"
@@ -39,7 +71,7 @@ function AdminProfile({ adminData, setAdminData, onLogout, onNavChange, highRisk
       onProfileClick={onProfileClick}
       highRiskCustomers={highRiskCustomers}
     >
-    <div className="card" style={{ maxWidth: '750px', margin: '30px auto', padding: '40px' }}>
+    <div className="card" style={{ maxWidth: '1200px', margin: '30px auto', padding: '40px' }}>
           <div className="profile-section" style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
             <div style={{ textAlign: 'center' }}>
               <div 
@@ -68,7 +100,7 @@ function AdminProfile({ adminData, setAdminData, onLogout, onNavChange, highRisk
                   type="text" 
                   className="filter-select" 
                   style={{ width: '100%', background: '#f9f9f9', border: '1px solid #ddd', padding: '12px' }}
-                  value={adminData.nama}
+                  value={adminData?.username || ""}
                   onChange={(e) => setAdminData({ ...adminData, nama: e.target.value })}
                 />
               </div>
@@ -78,11 +110,11 @@ function AdminProfile({ adminData, setAdminData, onLogout, onNavChange, highRisk
                   type="email" 
                   className="filter-select" 
                   style={{ width: '100%', background: '#f9f9f9', border: '1px solid #ddd', padding: '12px' }}
-                  value={adminData.email}
+                  value={adminData?.email || ""}
                   onChange={(e) => setAdminData({ ...adminData, email: e.target.value })}
                 />
               </div>
-              <div style={{ marginBottom: '15px' }}>
+              {/* <div style={{ marginBottom: '15px' }}>
                 <label style={{ fontSize: '0.8rem', color: '#888' }}>Password</label>
                 <input 
                   type={isEditingPw ? "text" : "password"}
@@ -92,7 +124,7 @@ function AdminProfile({ adminData, setAdminData, onLogout, onNavChange, highRisk
                   onChange={(e) => setTempPw(e.target.value)}
                   readOnly={!isEditingPw}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
           

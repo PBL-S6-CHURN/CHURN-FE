@@ -17,8 +17,7 @@ export default function Router({
   allData,
   highRiskCustomers,
   selectedCustomer,
-  setSelectedCustomer,
-  handleLogout
+  setSelectedCustomer
 }) {
   return (
     <Routes>
@@ -36,7 +35,6 @@ export default function Router({
               adminData={adminData}
               highRiskCustomers={highRiskCustomers}
               onViewDetail={setSelectedCustomer}
-              handleLogout={handleLogout}
             />
           </ProtectedRoute>
         }
@@ -50,7 +48,6 @@ export default function Router({
               adminData={adminData}
               highRiskCustomers={highRiskCustomers}
               onViewDetail={setSelectedCustomer}
-              handleLogout={handleLogout}
             />
           </ProtectedRoute>
         }
@@ -64,7 +61,6 @@ export default function Router({
               adminData={adminData}
               setAdminData={setAdminData}
               highRiskCustomers={highRiskCustomers}
-              handleLogout={handleLogout}
             />
           </ProtectedRoute>
         }
@@ -77,7 +73,6 @@ export default function Router({
             <TambahCustomer
               adminData={adminData}
               highRiskCustomers={highRiskCustomers}
-              handleLogout={handleLogout}
             />
           </ProtectedRoute>
         }
@@ -91,7 +86,6 @@ export default function Router({
               customer={selectedCustomer}
               adminData={adminData}
               highRiskCustomers={highRiskCustomers}
-              handleLogout={handleLogout}
             />
           </ProtectedRoute>
         }
