@@ -1,23 +1,45 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import MainLayout from "../../layouts/MainLayout";
 import { Icon } from "@iconify/react";
-import './style.css';
+import { getSummarizeData } from "../../api/summarizeApi";
+import "./style.css";
 
-function Summarize({ onLogout, onProfileClick, adminData, onNavChange, highRiskCustomers }) {
-  const comments = [
-    {
-      id: 1,
-      name: "Jonathan",
-      rating: 4.0,
-      text: `Wkwkwkwk yg pada bngung gnti bahasa, ada disettingan... Klo udh pilih server dan masih di layar utama, pilih settingan di pojok kiri bawah terus pilih kolom tulisan kanan ke 2 nah itu ada ganti bahasa nya .. anjir kaget liat rating 1.9 cuma hanya gara" bahasa dan login sebelum server rilis`,
-    },
-    {
-      id: 2,
-      name: "Jonathan",
-      rating: 4.0,
-      text: `Wkwkwkwk yg pada bngung gnti bahasa, ada disettingan... Klo udh pilih server dan masih di layar utama, pilih settingan di pojok kiri bawah terus pilih kolom tulisan kanan ke 2 nah itu ada ganti bahasa nya .. anjir kaget liat rating 1.9 cuma hanya gara" bahasa dan login sebelum server rilis`,
-    },
-  ];
+function Summarize({
+  onLogout,
+  onProfileClick,
+  adminData,
+  onNavChange,
+  highRiskCustomers,
+}) {
+  const [positivePercentage, setPositivePercentage] = useState(0);
+  const [negativePercentage, setNegativePercentage] = useState(0);
+  const [sentimentPositive, setSentimentPositive] = useState("");
+  const [sentimentNegative, setSentimentNegative] = useState("");
+  const [totalComments, setTotalComments] = useState([]);
+
+  const handleDataSummarize = async () => {
+    try {
+      const response = await getSummarizeData();
+
+      setPositivePercentage(response.data.percentage.positif);
+      setNegativePercentage(response.data.percentage.negatif);
+      setSentimentPositive(response.data.summary.positif);
+      setSentimentNegative(response.data.summary.negatif);
+      setTotalComments(response.data.top5Comments);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  useEffect(() => {
+    handleDataSummarize();
+  }, [
+    positivePercentage,
+    negativePercentage,
+    sentimentPositive,
+    sentimentNegative,
+    totalComments,
+  ]);
 
   return (
     <MainLayout
@@ -35,11 +57,11 @@ function Summarize({ onLogout, onProfileClick, adminData, onNavChange, highRiskC
         <div className="percentage-container">
           <div className="perc-card white">
             <p>Positif</p>
-            <h2>20%</h2>
+            <h2>{positivePercentage}%</h2>
           </div>
           <div className="perc-card maroon">
             <p>Negatif</p>
-            <h2>80%</h2>
+            <h2>{negativePercentage}%</h2>
           </div>
         </div>
       </div>
@@ -50,15 +72,11 @@ function Summarize({ onLogout, onProfileClick, adminData, onNavChange, highRiskC
         <div className="text-content-sm">
           <div className="sm-item">
             <h4>Positif</h4>
-            <p>
-            Lorem ipsum dolor sit amet consectetur. Congue mi odio in est. Fames feugiat luctus quis at. Risus risus pretium congue quam non purus senectus massa. Urna elementum at ac blandit duis dui vitae. Non a libero nunc in elementum odio maecenas sed feugiat. Lacus magnis enim massa facilisis sed ut tortor eu. Euismod nec et elementum nisl in iaculis vitae velit.
-            </p>
+            <p>{sentimentPositive}</p>
           </div>
           <div className="sm-item">
             <h4>Negatif</h4>
-            <p>
-            Lorem ipsum dolor sit amet consectetur. Congue mi odio in est. Fames feugiat luctus quis at. Risus risus pretium congue quam non purus senectus massa. Urna elementum at ac blandit duis dui vitae. Non a libero nunc in elementum odio maecenas sed feugiat. Lacus magnis enim massa facilisis sed ut tortor eu. Euismod nec et elementum nisl in iaculis vitae velit.
-            </p>
+            <p>{sentimentNegative}</p>
           </div>
         </div>
       </div>
@@ -67,19 +85,31 @@ function Summarize({ onLogout, onProfileClick, adminData, onNavChange, highRiskC
       <div className="summarize-section" style={{ paddingTop: "50px" }}>
         <h3 className="sub-title-sm">Top 5 Comment</h3>
         <div className="comments-list">
-          {comments.map((c) => (
-            <div key={c.id} className="comment-card">
+          {totalComments.map((c) => (
+            <div className="comment-card">
               <div className="comment-header">
                 <div className="user-info">
-                  <div className="user-avatar-sm">👤</div>
-                  <span className="user-name">{c.name}</span>
+                  {/* <div className="user-avatar-sm">👤</div> */}
+                  <div className="user-avatar-sm">
+                    {c.userImage ? (
+                      <img src={c.userImage} width={28} height={28} style={{ borderRadius: "50%" }} alt="User Avatar" />
+                    ) : (
+                      "👤"
+                    )}
+                  </div>
+                  <span className="user-name">{c.userName}</span>
                 </div>
                 <div className="rating">
-                  <Icon icon="material-symbols:star" width="24" height="24" color="#630000" />
-                  {c.rating.toFixed(1)}
+                  <Icon
+                    icon="material-symbols:star"
+                    width="24"
+                    height="24"
+                    color="#630000"
+                  />
+                  {c.score.toFixed(1)}
                 </div>
               </div>
-              <p className="comment-text">{c.text}</p>
+              <p className="comment-text">{c.content}</p>
             </div>
           ))}
         </div>
