@@ -80,6 +80,14 @@
 
 .notif-item:hover { background: #fdf2f2; }
 
+.avatar-img-small {
+  border-radius: 50%;
+  width: 34px; 
+  height: 34px;
+  cursor: pointer;
+  border: 1px solid #630000;
+}
+
 .notif-icon-avatar {
   background: #DFD3C3;
   width: 35px;

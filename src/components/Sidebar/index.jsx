@@ -5,9 +5,10 @@ import { Icon } from '@iconify/react';
 import './style.css'
 import { logout } from '../../api/authApi';
 
-export default function Sidebar({ onLogout }) {
+export default function Sidebar() {
     const navigate = useNavigate();
     const location = useLocation();
+
 
     const activeNav = (itemId) => {
         // Jika di halaman dashboard ATAU detail, maka menu Dashboard menyala

@@ -30,12 +30,6 @@ function App() {
     [allData]
   );
 
-  // const handleLogout = () => {
-  //   localStorage.removeItem("token");
-  //   setAdminData(null);
-  //   window.location.href = "/login";
-  // };
-
   useEffect(() => {
     const storedAdminData = localStorage.getItem("token");
     if (storedAdminData && !adminData) {

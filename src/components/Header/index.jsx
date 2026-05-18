@@ -96,8 +96,8 @@ export default function Header({ title, adminData, highRiskCustomers, onViewDeta
         )}
 
         <span className="profile-svg">
-          {adminData?.foto ? (
-            <img src={adminData.foto} className="avatar-img-small" alt="p" />
+          {adminData?.profile_image ? (
+            <img src={`http://localhost:8000/${adminData.profile_image}`} className="avatar-img-small" alt="p" onClick={() => navigate("/profile")} />
           ) : (
             <Icon
               icon="mingcute:user-4-fill"
