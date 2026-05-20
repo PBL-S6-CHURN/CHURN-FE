@@ -1,0 +1,68 @@
+.sentiment-check-container {
+    display: flex;
+    justify-content: center;
+    height: 80vh;
+    flex-direction: column;
+    width: 100%;
+}
+
+.sentiment-icon-group {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 25px;
+}
+
+.sentiment-icon-group .sentiment-icon{
+    width: 150px;
+    height: 150px;
+}
+
+.bad-icon {
+    color: #C01717;
+}
+
+.neutral-icon {
+    color: #810000;
+}
+
+.happy-icon {
+    color: #630000;
+}
+
+.btn-check-sentiment {
+    padding: 10px;
+    background-color: #630000;
+    color: white;
+    border: none;
+    gap: 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.sentiment-result {
+    padding-top: 25px;
+    display: flex;
+    gap: 150px;
+}
+
+.sentiment-result-label {
+    display: block;
+    font-family: "Poppins", sans-serif;
+    font-size: 18px;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.sentiment-result-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sentiment-result-value p {
+    margin: 0;
+    font-size: 16px;
+    color: #000000;
+}

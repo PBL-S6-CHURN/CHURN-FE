@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { addCustomer, uploadCustomerExcel } from "../../api/customerApi";
 import { Icon } from "@iconify/react";
 
-function TambahCustomer({ adminData, highRiskCustomers }) {
+function TambahCustomer({ adminData,  }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
@@ -86,7 +86,6 @@ function TambahCustomer({ adminData, highRiskCustomers }) {
       title="Tambah Customer"
       activeNav="add-customer"
       adminData={adminData}
-      highRiskCustomers={highRiskCustomers}
     >
       <section className="form-container">
         <form onSubmit={handleSubmit}>

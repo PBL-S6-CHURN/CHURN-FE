@@ -3,17 +3,17 @@ import { useNavigate } from "react-router-dom";
 import "./style.css";
 import { Icon } from "@iconify/react";
 
-export default function Header({ title, adminData, highRiskCustomers, onViewDetail }) {
+export default function Header({ title, adminData, onViewDetail }) {
   const [showNotif, setShowNotif] = useState(false);
   const [filter, setFilter] = useState("All");
   const filterNoticeCategory = ["All", "Starter", "Enterprise", "Professional"];
   const navigate = useNavigate();
 
   // Filter data berdasarkan kategori (contoh logic)
-  const filteredCustomers =
-    filter === "All"
-      ? highRiskCustomers
-      : highRiskCustomers.filter((c) => c.plan_type === filter);
+  // const filteredCustomers =
+  //   filter === "All"
+  //     ? highRiskCustomers
+  //     : highRiskCustomers.filter((c) => c.plan_type === filter);
 
   return (
     <header className="top-bar">
@@ -34,11 +34,11 @@ export default function Header({ title, adminData, highRiskCustomers, onViewDeta
             onClick={() => setShowNotif(!showNotif)}
             style={{ cursor: "pointer" }}
           />
-          {highRiskCustomers.length > 0 && (
+          {/* {highRiskCustomers.length > 0 && (
             <span className="notif-badge-count">
               {highRiskCustomers.length}
             </span>
-          )}
+          )} */}
         </div>
 
         {/* Dropdown Notifikasi */}

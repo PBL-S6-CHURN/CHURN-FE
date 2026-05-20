@@ -6,18 +6,11 @@
   outline: none;
 }
 
-/* 2. Judul - Paksa Poppins */
-h1, h2, h3, h4, h5, h6, 
-.title, .signin-title, .risk-label, .sub-title-sm {
-  font-family: 'Poppins', sans-serif !important;
-}
-
 html, body, #root {
   width: 100%; 
   height: 100%; 
   overflow: hidden;
   background-color: white;
-  font-family: "Inter", sans-serif;
 }
 
 /* Wrapper  */
@@ -70,7 +63,7 @@ html, body, #root {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Roboto", "sans-serif"
 }
 
 body, html, #root {
@@ -88,7 +81,7 @@ body, html, #root {
 }
 
 .logo-img {
-  width: 100px;
+  width: 150px;
   margin-bottom: 15px;
 }
 

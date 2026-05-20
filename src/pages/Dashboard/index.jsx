@@ -119,7 +119,6 @@ function Dashboard({
       activeNav="dashboard"
       onNavChange={onNavChange}
       adminData={adminData}
-      highRiskCustomers={[]}
       onViewDetail={onViewDetail}
       onProfileClick={onProfileClick}
     >

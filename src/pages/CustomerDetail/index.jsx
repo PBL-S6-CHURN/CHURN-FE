@@ -8,7 +8,7 @@ import ContactButton from "../../components/CustomerDetailComponents/ContactButt
 import { useParams } from "react-router-dom";
 import { getCustomerById } from "../../api/customerApi";
 
-function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange, highRiskCustomers }) {
+function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange }) {
   const { id } = useParams();
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,6 @@ function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange, highRi
         onProfileClick={onProfileClick}
         activeNav="dashboard"
         onNavChange={onNavChange}
-        highRiskCustomers={highRiskCustomers}
       >
         <div>Loading...</div>
       </MainLayout>
@@ -58,7 +57,6 @@ function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange, highRi
       onProfileClick={onProfileClick}
       activeNav="dashboard"
       onNavChange={onNavChange}
-      highRiskCustomers={highRiskCustomers}
     >
       <div className="detail-container">
         <div className="detail-top-section">
@@ -79,11 +77,11 @@ function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange, highRi
             <InfoBox label="Monthly Revenue" value={customer.monthly_revenue} unit="$" />
             <InfoBox label="Tenure Months" value={customer.tenure_months} unit="Months" />
             <InfoBox label="Payment Delay Count" value={customer.payment_delay_count} unit="Times" />
-            <InfoBox label="Monthly Usage Hours" value={customer.monthly_usage_hours} unit="Hours" />
+            <InfoBox label="Monthly Usage Hours" value={customer.monthly_usage_hrs} unit="Hours" />
             <InfoBox label="Total User" value={customer.total_users} unit="User" />
             <InfoBox label="Feature Adoption Pct" value={customer.feature_adoption_pct} unit="Pct" />
-            <InfoBox label="Support Tickets" value={customer.support_tickets_last_90d} unit="Days" />
-            <InfoBox label="Last Login" value={customer.last_login_days_ago} unit="Days Ago" />
+            <InfoBox label="Support Tickets Last Day 90d" value={customer.support_ticket_last_90d} unit="Days" />
+            <InfoBox label="Last Login Days Ago" value={customer.last_login_days_ago} unit="Days Ago" />
             <InfoBox label="Nps Score" value={customer.nps_score} /> 
           </div>
         </div>
@@ -93,7 +91,7 @@ function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange, highRi
           <div className="prediction-card">
             <h3 className="section-title">Prediction Result</h3>
             <div className="prediction-grid">
-              {/* <PredictBox title="Risk" value={customer.risk.toUpperCase()} isRisk={true} /> */}
+              <PredictBox title="Risk" value={"HIGH"} isRisk={true} />
               <PredictBox title="Churn Factor" value="Keterangan faktor churn customer ini berdasarkan analisis data penggunaan..." />
               <PredictBox title="Solution" value="Berikan penawaran diskon loyalty atau upgrade fitur gratis selama 1 bulan." />
             </div>

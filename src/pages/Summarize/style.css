@@ -13,6 +13,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 25px;
+  font-family: "Poppins", sans-serif;
 }
 
 .percentage-container {
@@ -37,6 +38,11 @@
   color: #000;
 }
 
+.perc-card.brown {
+  background: #C7B198;
+  color: #000;
+}
+
 .perc-card.maroon {
   background: #630000;
   color: #fff;
@@ -45,13 +51,11 @@
 .perc-card p {
   font-size: 21px;
   font-weight: 500;
-  font-family: "Inter", sans-serif !important;
 }
 
 .perc-card h2 {
   font-size: 4rem;
   font-weight: 400;
-  font-family: "Inter", sans-serif !important;
 }
 
 /* summarize section */
@@ -75,7 +79,6 @@
   color: #444;
   line-height: 1.6;
   text-align: justify;
-  font-family: "Inter", sans-serif !important;
 }
   
 /* Comment Cards List */

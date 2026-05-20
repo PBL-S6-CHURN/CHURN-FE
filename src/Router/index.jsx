@@ -10,12 +10,11 @@ import Summarize from "../pages/Summarize";
 import AdminProfile from "../pages/AdminProfile";
 import CustomerDetail from "../pages/CustomerDetail";
 import TambahCustomer from "../pages/TambahCustomer";
+import SentimentCheck from "../pages/SentimentCheck";
 
 export default function Router({
   adminData,
   setAdminData,
-  allData,
-  highRiskCustomers,
   selectedCustomer,
   setSelectedCustomer
 }) {
@@ -31,9 +30,7 @@ export default function Router({
         element={
           <ProtectedRoute>
             <Dashboard
-              allData={allData}
               adminData={adminData}
-              highRiskCustomers={highRiskCustomers}
               onViewDetail={setSelectedCustomer}
             />
           </ProtectedRoute>
@@ -46,7 +43,6 @@ export default function Router({
           <ProtectedRoute>
             <Summarize
               adminData={adminData}
-              highRiskCustomers={highRiskCustomers}
               onViewDetail={setSelectedCustomer}
             />
           </ProtectedRoute>
@@ -60,7 +56,18 @@ export default function Router({
             <AdminProfile
               adminData={adminData}
               setAdminData={setAdminData}
-              highRiskCustomers={highRiskCustomers}
+            />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/sentiment-check"
+        element={
+          <ProtectedRoute>
+            <SentimentCheck
+              adminData={adminData}
+              setAdminData={setAdminData}
             />
           </ProtectedRoute>
         }
@@ -72,7 +79,6 @@ export default function Router({
           <ProtectedRoute>
             <TambahCustomer
               adminData={adminData}
-              highRiskCustomers={highRiskCustomers}
             />
           </ProtectedRoute>
         }
@@ -85,7 +91,6 @@ export default function Router({
             <CustomerDetail
               customer={selectedCustomer}
               adminData={adminData}
-              highRiskCustomers={highRiskCustomers}
             />
           </ProtectedRoute>
         }

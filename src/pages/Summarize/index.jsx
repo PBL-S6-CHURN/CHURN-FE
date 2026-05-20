@@ -10,7 +10,6 @@ function Summarize({
   onProfileClick,
   adminData,
   onNavChange,
-  highRiskCustomers,
 }) {
   const [positivePercentage, setPositivePercentage] = useState(0);
   const [negativePercentage, setNegativePercentage] = useState(0);
@@ -49,13 +48,13 @@ function Summarize({
       onNavChange={onNavChange}
       adminData={adminData}
       onProfileClick={onProfileClick}
-      highRiskCustomers={highRiskCustomers}
     >
       {/* Persentase Section */}
       <div className="summarize-section card-perc">
         <h3 className="sub-title-sm">Percentage</h3>
         <div className="percentage-container">
           <PercentageCard percentageTitle="Positif" percentage={positivePercentage} bgColor="white" />
+          <PercentageCard percentageTitle="Netral" percentage={positivePercentage} bgColor="brown" />
           <PercentageCard percentageTitle="Negatif" percentage={negativePercentage} bgColor="maroon" />
         </div>
       </div>

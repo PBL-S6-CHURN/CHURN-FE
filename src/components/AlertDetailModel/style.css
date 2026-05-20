@@ -101,7 +101,7 @@
 .info-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
+  gap: 25px;
 }
 
 .info-item label {
@@ -122,18 +122,14 @@
 .btn-resolve-action {
   width: 100%;
   padding: 12px;
-  background: #f4eee8; /* Warna krem sesuai gambar */
-  border: 1px solid #e2d7cc;
+  background: #630000; 
+  color: white;
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
   transition: 0.2s;
 }
 
-.btn-resolve-action:hover {
-  background: #ece3d9;
-}
-
 .btn-end {
-    padding: 24px;
+  padding: 24px;
 }

@@ -11,7 +11,6 @@ export default function MainLayout({
   activeNav,
   onNavChange,
   onLogout,
-  highRiskCustomers,
   onProfileClick,
 }) {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -55,7 +54,6 @@ export default function MainLayout({
           title={title}
           adminData={adminData}
           onProfileClick={onProfileClick}
-          highRiskCustomers={highRiskCustomers}
           onViewDetail={handleViewDetail}
         />
         <AlertDetailModal
