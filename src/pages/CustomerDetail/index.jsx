@@ -18,6 +18,7 @@ function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange }) {
     const fetchDetail = async() => {
       try {
         const response = await getCustomerById(id);
+        console.log(response.data.message);
         setCustomer(response.data.message);
         console.log(response.data.message);
         
@@ -66,7 +67,7 @@ function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange }) {
               <Icon icon="entypo:user" className="user-avatar-icon" />
             </div>
             <h4 className="status-text">
-              {/* Status : {customer.churn === "Yes" ? "Churned" : "Stayed"} */}
+              Status : {customer.score == 0 ? "Stayed" : "Churned"}
             </h4>
           </div>
 
@@ -91,9 +92,9 @@ function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange }) {
           <div className="prediction-card">
             <h3 className="section-title">Prediction Result</h3>
             <div className="prediction-grid">
-              <PredictBox title="Risk" value={"HIGH"} isRisk={true} />
-              <PredictBox title="Churn Factor" value="Keterangan faktor churn customer ini berdasarkan analisis data penggunaan..." />
-              <PredictBox title="Solution" value="Berikan penawaran diskon loyalty atau upgrade fitur gratis selama 1 bulan." />
+              <PredictBox title="Risk" value={customer.risk} isRisk={true} />
+              <PredictBox title="Churn Factor" value={customer.cause} />
+              <PredictBox title="Solution" value={customer.solution} />
             </div>
           </div>
         </div>

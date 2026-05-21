@@ -4,7 +4,7 @@ export default function InfoItem({ label, value }) {
     return (
         <div className="info-item">
             <label>{label}</label>
-            <p>{value}</p>
+            <p className="line-clamp-2">{value}</p>
         </div>
     );
 }

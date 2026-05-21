@@ -1,7 +1,7 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import MainLayout from "../../layouts/MainLayout/";
 import "./style.css";
-import { getCustomers, getCustomersByType, getCustomerStats, searchCustomers } from "../../api/customerApi";
+import { getCustomerChurnStats, getCustomerRetentionStats, getCustomerRiskStats, getCustomers, getCustomersByType, getCustomerStats, searchCustomers, streamCustomerPredictions } from "../../api/customerApi";
 
 // kompulan component
 import ChurnStatusCountCard from "../../components/DashboardComponents/ChurnStatusCountCard";
@@ -20,6 +20,8 @@ function Dashboard({
 }) {
   const [customers, setCustomers] = useState([]);
   const [planStats, setPlanStats] = useState([]);
+  const [churnStats, setChurnStats] = useState({ stayed: 0, churned: 0 });
+  const [riskStats, setRiskStats] = useState({ low: 0, medium: 0, high: 0 });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,62 +43,122 @@ function Dashboard({
   ];
 
   const getData = async () => {
+    if (loading) return;
     setLoading(true);
+    
     try {
       let response;
 
       if (searchTerm) {
         response = await searchCustomers(searchTerm, currentPage);
-      } else if(selectedType) {
-        response = await getCustomersByType(selectedType, currentPage) 
+      } else if (selectedType) {
+        response = await getCustomersByType(selectedType, currentPage);
+      } else if (selectedRisk) {
+        response = await getCustomerRetentionStats(selectedRisk, currentPage);
       } else {
         response = await getCustomers(currentPage);
       }
 
-      setCustomers(response.data);
-      setTotalPages(response.metadata.total_pages);
+      let rawList = [];
+      if (response) {
+        if (Array.isArray(response.data)) {
+          rawList = response.data;
+        } else if (response.data?.message && Array.isArray(response.data.message.customers)) {
+          rawList = response.data.message.customers;
+        } else if (Array.isArray(response)) {
+          rawList = response;
+        } else if (response.message && Array.isArray(response.message.customers)) {
+          rawList = response.message.customers;
+        }
+      }
+
+      if (rawList.length > 0) {
+        const normalizedCustomers = rawList.map((customer) => {
+          const prediction = customer.prediction_results || {};
+          return {
+            ...customer,
+            customer_id: customer.customer_id || customer.customer_code,
+            risk: customer.risk || prediction.risk_level || "UNKNOWN",
+            risk_score: customer.risk_score !== undefined ? customer.risk_score : (prediction.risk_score_pct || 0),
+            cause: customer.cause || (prediction.churn_factors ? prediction.churn_factors.join("\n") : ""),
+            solution: customer.solution || (prediction.solutions ? prediction.solutions.join("\n") : "")
+          };
+        });
+        
+        // LANGSUNG SET DATA DARI DB (Tanpa tercampur data stream)
+        setCustomers(normalizedCustomers);
+        
+        const detectedTotalPages = response.metadata?.total_pages || response.data?.message?.totalPages || 1;
+        setTotalPages(detectedTotalPages);
+      } else {
+        setCustomers([]);
+        setTotalPages(1);
+      }
     } catch (error) {
-      // Melempar error agar bisa ditangkap oleh komponen UI
-      throw error.response?.data?.message || "Terjadi kesalahan saat mengambil data pelanggan";
+      console.error("Error mengambil data pelanggan:", error);
+      setCustomers([]);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const getStatsData = async () => {
     try {
-      const response = await getCustomerStats();
-      setPlanStats(response.data.message);
+      const planRes = await getCustomerStats();
+      setPlanStats(planRes.data.message);
+
+      // 2. Ambil statistik Churn (Sesuaikan parsing jika format backend Anda mengembalikan array/objek)
+      const churnRes = await getCustomerChurnStats();
+
+      if (churnRes.data?.message?.summary) {
+        const summary = churnRes.data.message.summary;
+        setChurnStats({
+          stayed: summary.not_churn || 0, // not_churn dipetakan ke Stayed
+          churned: summary.churn || 0     // churn dipetakan ke Churned
+        });
+      }
+
+      // 3. Ambil statistik Risk
+      const riskRes = await getCustomerRiskStats();
+      if (riskRes.data?.summary) {
+        setRiskStats({
+          low: riskRes.data.summary.low || 0,
+          medium: riskRes.data.summary.medium || 0,
+          high: riskRes.data.summary.high || 0
+        });
+      }
     } catch (error) {
       // Melempar error agar bisa ditangkap oleh komponen UI
-      throw error.response?.data?.message || "Terjadi kesalahan saat mengambil data statistik pelanggan";
+      console.error("Gagal memuat statistik database:", error);
     }
   }
 
-  const allData = useMemo(() => {
-    const plans = ["Starter", "Enterprise", "Professional"];
-    const risks = ["Low", "Medium", "High"];
-    return Array.from({ length: 40 }, (_, i) => ({
-      id: `C-00${(i + 1).toString().padStart(2, "0")}`,
-      plan: plans[Math.floor(Math.random() * plans.length)],
-      contract: Math.random() > 0.5 ? "Monthly" : "Annual",
-      tenure: Math.floor(Math.random() * 24) + 1,
-      revenue: (Math.random() * 500 + 50).toFixed(2),
-      users: Math.floor(Math.random() * 50) + 5,
-      hours: (Math.random() * 200 + 20).toFixed(2),
-      feature: (Math.random() * 100).toFixed(1),
-      delay: Math.floor(Math.random() * 10),
-      support: Math.floor(Math.random() * 15),
-      nps: Math.floor(Math.random() * 10),
-      score: Math.floor(Math.random() * 100),
-      risk: risks[Math.floor(Math.random() * risks.length)],
-      churn: Math.random() > 0.7 ? "Yes" : "No",
-    }));
-  }, []);
 
-  const stayedCount = allData.filter((item) => item.churn === "No").length;
-  const churnedCount = allData.filter((item) => item.churn === "Yes").length;
-  const lowRiskCount = allData.filter((item) => item.risk === "Low").length;
-  const medRiskCount = allData.filter((item) => item.risk === "Medium").length;
-  const highRiskCount = allData.filter((item) => item.risk === "High").length;
+  // --- 2. SSE HANYA UNTUK UPDATE STATISTIK (CARD DI ATAS) ---
+  useEffect(() => {
+    console.log("🔌 Membuka koneksi SSE...");
+    
+    // Ambil data tabel pertama kali secara normal
+    getData();
+
+    const closeStream = streamCustomerPredictions(
+      (newData) => {
+        console.log("🔥 SSE Log: Memproses", newData.customer_code);
+
+        // KUNCI UTAMA: Jangan panggil setCustomers(...) di sini!
+        // Kita hanya memanfaatkan trigger jalannya stream untuk memperbarui angka Card Statistik di atas tabel
+        getStatsData();
+      },
+      (error) => {
+        console.error("Koneksi stream terputus.");
+      }
+    );
+
+    return () => {
+      closeStream();
+    };
+  }, []);
 
   useEffect(() => {
     getStatsData();
@@ -110,7 +172,7 @@ function Dashboard({
     }, 500); // 500ms jeda
 
     return () => clearTimeout(delayDebounce);
-  }, [currentPage, searchTerm, selectedType]);
+  }, [currentPage, searchTerm, selectedType, selectedRisk]);
 
 
   return (
@@ -127,17 +189,17 @@ function Dashboard({
         <div className="card churn-card">
           <h3>Churn Status</h3>
           <div className="churn-content">
-            <ChurnStatusCountCard styleCard="churn-box-white" titleCount="Stayed" countChurn={stayedCount} />
-            <ChurnStatusCountCard styleCard="churn-box-maroon" titleCount="Churned" countChurn={churnedCount} />
+            <ChurnStatusCountCard styleCard="churn-box-white" titleCount="Stayed" countChurn={churnStats.stayed} />
+            <ChurnStatusCountCard styleCard="churn-box-maroon" titleCount="Churned" countChurn={churnStats.churned} />
           </div>
         </div>
         <div class="risk-card">
           <div class="risk-header">Risk Category Count</div>
 
           <div class="risk-sections-container">
-            <RiskCountChurn colorRisk="low" titleRisk="Low" countRisk={lowRiskCount} />
-            <RiskCountChurn colorRisk="medium" titleRisk="Medium" countRisk={medRiskCount} />
-            <RiskCountChurn colorRisk="high" titleRisk="High" countRisk={highRiskCount} />
+            <RiskCountChurn colorRisk="low" titleRisk="Low" countRisk={riskStats.low} />
+            <RiskCountChurn colorRisk="medium" titleRisk="Medium" countRisk={riskStats.medium} />
+            <RiskCountChurn colorRisk="high" titleRisk="High" countRisk={riskStats.high} />
           </div>
         </div>
       </div>

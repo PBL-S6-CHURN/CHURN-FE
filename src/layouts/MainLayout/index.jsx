@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import Header from "../../components/Header";
 import "./style.css";
-import AlertDetailModal from "../../components/AlertDetailModel";
+import AlertDetailModal from "../../components/AlertDetailModal";
 import { getProfile } from "../../api/userApi";
 
 export default function MainLayout({
@@ -19,8 +19,9 @@ export default function MainLayout({
   const [loadingProfile, setLoadingProfile] = useState(true);
 
   // Fungsi ini dipassing ke Header
-  const handleViewDetail = (customer) => {
-    setSelectedCustomer(customer);
+  const handleViewDetail = (id) => {
+    console.log(id);
+    setSelectedCustomer(id);
     setIsModalOpen(true);
   };
 
@@ -58,8 +59,15 @@ export default function MainLayout({
         />
         <AlertDetailModal
           isOpen={isModalOpen}
-          customer={selectedCustomer}
-          onClose={() => setIsModalOpen(false)}
+          alertId={selectedCustomer}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedCustomer(null);
+          }}
+          onRefreshData={() => {
+            // Jika ada fungsi refresh data dashboard global, taruh di sini
+            console.log("Data di-refresh setelah resolve");
+          }}
         />
         {/* <div className="content-body">{children}</div> */}
         {/* (Dashboard, Customers, dll.) */}

@@ -1,19 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
 import { Icon } from "@iconify/react";
+import { getAlerts, getAlertStats } from "../../api/alertapi";
 
 export default function Header({ title, adminData, onViewDetail }) {
   const [showNotif, setShowNotif] = useState(false);
   const [filter, setFilter] = useState("All");
+  const [alerts, setAlerts] = useState([]);
+  const [totalAlertCount, setTotalAlertCount] = useState(0); 
   const filterNoticeCategory = ["All", "Starter", "Enterprise", "Professional"];
   const navigate = useNavigate();
 
-  // Filter data berdasarkan kategori (contoh logic)
-  // const filteredCustomers =
-  //   filter === "All"
-  //     ? highRiskCustomers
-  //     : highRiskCustomers.filter((c) => c.plan_type === filter);
+  // Khusus fetch total count badge global dari statistik (di-run setiap dropdown dibuka atau init)
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await getAlertStats();
+        if (res && res.status === "success") {
+          setTotalAlertCount(res.data.unread_alerts || 0);
+        }
+      } catch (err) {
+        console.error("Gagal memuat statistik alert:", err);
+      }
+    };
+
+    fetchStats();
+  }, [showNotif]); // Hit ulang angka badge setiap kali lonceng diklik / dropdown interaksi
+
+  // Khusus fetch daftar list item berdasarkan tab filter yang aktif
+  useEffect(() => {
+    const fetchAlertList = async () => {
+      try {
+        const res = await getAlerts(filter, 1); 
+        console.log(res.data);
+        
+        if (res && res.status === "success") {
+          setAlerts(res.data || []);
+        }
+      } catch (err) {
+        console.error("Gagal memuat list notifikasi:", err);
+      }
+    };
+
+    fetchAlertList();
+  }, [filter, showNotif]); // Hit ulang jika tab filter diganti
+
+  // Fungsi helper format tanggal dari BE
+  const formatDateTime = (isoString) => {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    return `${date.toLocaleDateString("id-ID")} - ${date.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}`;
+  };
 
   return (
     <header className="top-bar">
@@ -34,11 +72,12 @@ export default function Header({ title, adminData, onViewDetail }) {
             onClick={() => setShowNotif(!showNotif)}
             style={{ cursor: "pointer" }}
           />
-          {/* {highRiskCustomers.length > 0 && (
+          {/* Badge sekarang menggunakan total count murni dari endpoint stats */}
+          {totalAlertCount > 0 && (
             <span className="notif-badge-count">
-              {highRiskCustomers.length}
+              {totalAlertCount}
             </span>
-          )} */}
+          )}
         </div>
 
         {/* Dropdown Notifikasi */}
@@ -47,7 +86,7 @@ export default function Header({ title, adminData, onViewDetail }) {
             <div className="notif-header">
               <h4>Notification</h4>
               <span className="notif-count-label">
-                {highRiskCustomers.length}
+                {alerts.length} {/* Jumlah data yang tampil di tab saat ini */}
               </span>
             </div>
 
@@ -65,13 +104,13 @@ export default function Header({ title, adminData, onViewDetail }) {
             </div>
 
             <div className="notif-body">
-              {filteredCustomers.length > 0 ? (
-                filteredCustomers.slice(0, 5).map((item) => (
+              {alerts.length > 0 ? (
+                alerts.map((item) => (
                   <div
                     key={item.id}
-                    className="notif-item"
+                    className={`notif-item ${item.alert_is_read ? "read" : "unread"}`}
                     onClick={() => {
-                      onViewDetail(item);
+                      onViewDetail(item.id); 
                       setShowNotif(false);
                     }}
                   >
@@ -79,12 +118,14 @@ export default function Header({ title, adminData, onViewDetail }) {
                       <Icon icon="entypo:user" width="30" color="#630000" />
                     </div>
                     <div className="notif-text">
-                        <div className="notif-row">
-                            <span className="customer-id">{item.id}</span>
-                            <span className="warning-tag">WARNING</span>
-                        </div>
-                        <p className="notif-subtext">Customer Churn</p>
-                        <span className="notif-time">12/01/2026 - 15.00</span>
+                      <div className="notif-row">
+                        <span className="customer-id">{item.customer_code}</span>
+                        <span className={`warning-tag ${item.alert_severity?.toLowerCase()}`}>
+                          {"WARNING"}
+                        </span>
+                      </div>
+                      <p className="notif-subtext">{item.alert_message}</p>
+                      <span className="notif-time">{formatDateTime(item.created_at)}</span>
                     </div>
                   </div>
                 ))
