@@ -32,6 +32,17 @@ export default function SentimentCheck({
         setLoading(false);
         }
     };
+
+    const renderSentimentIcon = (sentiment) => {
+        switch (sentiment) {
+            case "Positif":
+                return <SentimentExcitedIcon width="20px" className="sentiment-icon" />;
+            case "Negatif":
+                return <SentimentSadIcon width="20px" className="sentiment-icon" />;
+            default:
+                return <SentimentCalmRoundedIcon width="20px" className="sentiment-icon" />;
+        }
+    }
     return (
         <MainLayout
             title="Sentiment Check"
@@ -85,7 +96,7 @@ export default function SentimentCheck({
                     sentiment={result.sentiment}
                     probability={result.probability}
                     explainable={result.explainable}
-                    icon={<SentimentExcitedIcon width="20px" className="happy-icon" />}
+                    icon={renderSentimentIcon(result.sentiment)}
                 />
             )}
         </div>
