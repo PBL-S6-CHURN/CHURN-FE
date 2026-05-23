@@ -1,73 +1,94 @@
-import React from "react";
+import React, { useState } from "react";
 import "./style.css";
 import MainLayout from "../../layouts/MainLayout";
 
 // icon
-import SentimentSadIcon from '@iconify-react/material-symbols/sentiment-sad';
-import SentimentCalmRoundedIcon from '@iconify-react/material-symbols/sentiment-calm-rounded';
-import SentimentExcitedIcon from '@iconify-react/material-symbols/sentiment-excited';
+import SentimentSadIcon from "@iconify-react/material-symbols/sentiment-sad";
+import SentimentCalmRoundedIcon from "@iconify-react/material-symbols/sentiment-calm-rounded";
+import SentimentExcitedIcon from "@iconify-react/material-symbols/sentiment-excited";
+import { checkSentiment } from "../../api/SentimentCheckApi";
+import SentimentResult from "../../components/SentimentCheck/SentimentResult";
 
 export default function SentimentCheck({
     adminData,
     onNavChange,
     onProfileClick,
 }) {
+    const [text, setText] = useState("");
+    const [result, setResult] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleCheckSentiment = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+        const response = await checkSentiment({ text });
+        setResult(response.data);
+        alert("setiment ditampilkan");
+        console.log(response.data);
+        } catch (error) {
+        console.log(error.message);
+        } finally {
+        setLoading(false);
+        }
+    };
     return (
         <MainLayout
-        title="Sentiment Check"
-        activeNav="sentiment-check"
-        adminData={adminData}
-        onNavChange={onNavChange}
-        onProfileClick={onProfileClick}
+            title="Sentiment Check"
+            activeNav="sentiment-check"
+            adminData={adminData}
+            onNavChange={onNavChange}
+            onProfileClick={onProfileClick}
         >
-            <div className="sentiment-check-container">
-                <div className="sentiment-icon-group">
-                    <SentimentSadIcon className="sentiment-icon bad-icon" />
-                    <SentimentCalmRoundedIcon className="sentiment-icon neutral-icon" />
-                    <SentimentExcitedIcon className="sentiment-icon happy-icon" />
-                </div>
-                <div className="form-check-sentiment">
-                    <form action="">
-                        <div className='input-group'>
-                            <label style={{ fontSize: '0.8rem', color: '#888' }}>Tuliskan Sentiment</label>
-                            <input 
-                                type="text" 
-                                className="filter-select" 
-                                // value={""}
-                                onChange={() => {}}
-                            />
-                        </div>
-                        <button 
-                            className="btn-check-sentiment" 
-                            style={{ width: '100%', borderRadius: '8px' }}
-                            onClick={() => alert("Sentiment ditampilkan")}
-                        >
-                            Cek aja
-                        </button>
-                    </form>
-                </div>
-                <div className="sentiment-result">
-                    <div className="sentiment-result-item">
-                        <label className="sentiment-result-label">Sentiment</label>
-                        <div className="sentiment-result-value">
-                            <p>Positif</p>
-                            <SentimentExcitedIcon width="20px" className="happy-icon" />
-                        </div>
-                    </div>
-                    <div className="sentiment-result-item">
-                        <label className="sentiment-result-label">Probability</label>
-                        <div className="sentiment-result-value">
-                            <p>90%</p>
-                        </div>
-                    </div>
-                    <div className="sentiment-result-item">
-                        <label className="sentiment-result-label">Expanable</label>
-                        <div className="sentiment-result-value">
-                            <p>Kalimat ini mengandung negatif karena ada kata jelek dan sinyal negatif dsjdska dksadjsaklj</p>
-                        </div>
-                    </div>
-                </div>
+        <div className="sentiment-check-container">
+            <div className="sentiment-icon-group">
+                <SentimentSadIcon className="sentiment-icon bad-icon" />
+                <SentimentCalmRoundedIcon className="sentiment-icon neutral-icon" />
+                <SentimentExcitedIcon className="sentiment-icon happy-icon" />
             </div>
+            <div className="form-check-sentiment">
+                <form onSubmit={handleCheckSentiment}>
+                    <div className="input-group">
+                    <label style={{ fontSize: "0.8rem", color: "#888" }}>
+                        Tuliskan Sentiment
+                    </label>
+                    <input
+                        type="text"
+                        className="filter-select"
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        disabled={loading}
+                    />
+                    </div>
+                    <button
+                    className="btn-check-sentiment"
+                    disabled={loading}
+                    type="submit"
+                    style={{ width: "100%", borderRadius: "8px" }}
+                    >
+                    Cek aja
+                    </button>
+                </form>
+            </div>
+            {loading && (
+                <div
+                    className="loading-container"
+                    style={{ textAlign: "center", marginTop: "20px" }}
+                >
+                    <p style={{ color: "#630000", fontWeight: "bold" }}>
+                    AI sedang menganalisis kalimat Anda...
+                    </p>
+                </div>
+            )}
+            {!loading && result && (
+                <SentimentResult
+                    sentiment={result.sentiment}
+                    probability={result.probability}
+                    explainable={result.explainable}
+                    icon={<SentimentExcitedIcon width="20px" className="happy-icon" />}
+                />
+            )}
+        </div>
         </MainLayout>
     );
 }

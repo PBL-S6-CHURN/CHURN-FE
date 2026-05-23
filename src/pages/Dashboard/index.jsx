@@ -48,7 +48,6 @@ function Dashboard({
     
     try {
       let response;
-
       if (searchTerm) {
         response = await searchCustomers(searchTerm, currentPage);
       } else if (selectedType) {
@@ -58,44 +57,45 @@ function Dashboard({
       } else {
         response = await getCustomers(currentPage);
       }
-
-      let rawList = [];
-      if (response) {
-        if (Array.isArray(response.data)) {
-          rawList = response.data;
-        } else if (response.data?.message && Array.isArray(response.data.message.customers)) {
-          rawList = response.data.message.customers;
-        } else if (Array.isArray(response)) {
-          rawList = response;
-        } else if (response.message && Array.isArray(response.message.customers)) {
-          rawList = response.message.customers;
-        }
+  
+      // Ambil Array Customer (Menangani dua versi struktur backend)
+      let rawCustomers = [];
+      if (response.data?.message?.customers) {
+        rawCustomers = response.data.message.customers;
+      } else if (Array.isArray(response.data)) {
+        rawCustomers = response.data;
       }
-
-      if (rawList.length > 0) {
-        const normalizedCustomers = rawList.map((customer) => {
+  
+      // Ambil Metadata Pagination
+      const totalPagesFromMeta = response.metadata?.total_pages || response.data?.message?.totalPages || 1;
+  
+      if (rawCustomers.length > 0) {
+        const normalizedCustomers = rawCustomers.map((customer) => {
+          // Ambil objek prediksi jika ada (untuk Normal View)
           const prediction = customer.prediction_results || {};
+          console.log(prediction);
+          const isChurn = (customer.score == 1) || (prediction.score == 1);
+          console.log(`ID: ${customer.customer_id} | Root Score: ${customer.score} | Pred Score: ${prediction.score}`);
+          
           return {
             ...customer,
             customer_id: customer.customer_id || customer.customer_code,
             risk: customer.risk || prediction.risk_level || "UNKNOWN",
-            risk_score: customer.risk_score !== undefined ? customer.risk_score : (prediction.risk_score_pct || 0),
-            cause: customer.cause || (prediction.churn_factors ? prediction.churn_factors.join("\n") : ""),
-            solution: customer.solution || (prediction.solutions ? prediction.solutions.join("\n") : "")
+            churn: isChurn == 1 ? "YES" : "NO",
+            risk_score: customer.risk_score !== undefined ? customer.risk_score : (prediction.risk_score_pct || 0), 
+            cause: customer.cause || (prediction.churn_factors ? prediction.churn_factors.join(", ") : ""),
+            solution: customer.solution || (prediction.solutions ? prediction.solutions.join(", ") : "")
           };
         });
-        
-        // LANGSUNG SET DATA DARI DB (Tanpa tercampur data stream)
+  
         setCustomers(normalizedCustomers);
-        
-        const detectedTotalPages = response.metadata?.total_pages || response.data?.message?.totalPages || 1;
-        setTotalPages(detectedTotalPages);
+        setTotalPages(totalPagesFromMeta);
       } else {
         setCustomers([]);
         setTotalPages(1);
       }
     } catch (error) {
-      console.error("Error mengambil data pelanggan:", error);
+      console.error("Error mengambil data:", error);
       setCustomers([]);
       setTotalPages(1);
     } finally {
@@ -135,7 +135,7 @@ function Dashboard({
   }
 
 
-  // --- 2. SSE HANYA UNTUK UPDATE STATISTIK (CARD DI ATAS) ---
+  // --- SSE HANYA UNTUK UPDATE STATISTIK (CARD DI ATAS) ---
   useEffect(() => {
     console.log("🔌 Membuka koneksi SSE...");
     
@@ -144,7 +144,7 @@ function Dashboard({
 
     const closeStream = streamCustomerPredictions(
       (newData) => {
-        console.log("🔥 SSE Log: Memproses", newData.customer_code);
+        console.log("SSE Log: Memproses", newData.customer_code);
 
         // KUNCI UTAMA: Jangan panggil setCustomers(...) di sini!
         // Kita hanya memanfaatkan trigger jalannya stream untuk memperbarui angka Card Statistik di atas tabel
@@ -159,6 +159,11 @@ function Dashboard({
       closeStream();
     };
   }, []);
+
+  // Reset ke halaman 1 jika ada perubahan filter atau pencarian
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedType, selectedRisk]);
 
   useEffect(() => {
     getStatsData();

@@ -13,18 +13,23 @@ function Summarize({
 }) {
   const [positivePercentage, setPositivePercentage] = useState(0);
   const [negativePercentage, setNegativePercentage] = useState(0);
+  const [netralPercentage, setNetralPercentage] = useState(0);
   const [sentimentPositive, setSentimentPositive] = useState("");
   const [sentimentNegative, setSentimentNegative] = useState("");
+  const [sentimentNetral, setSentimentNetral] = useState("");
   const [totalComments, setTotalComments] = useState([]);
 
   const handleDataSummarize = async () => {
     try {
       const response = await getSummarizeData();
-
+      console.log(response.data);
+      
       setPositivePercentage(response.data.percentage.positif);
       setNegativePercentage(response.data.percentage.negatif);
+      setNetralPercentage(response.data.percentage.netral);
       setSentimentPositive(response.data.summary.positif);
       setSentimentNegative(response.data.summary.negatif);
+      setSentimentNetral(response.data.summary.netral);
       setTotalComments(response.data.top5Comments);
     } catch (err) {
       console.log(err.message);
@@ -54,7 +59,7 @@ function Summarize({
         <h3 className="sub-title-sm">Percentage</h3>
         <div className="percentage-container">
           <PercentageCard percentageTitle="Positif" percentage={positivePercentage} bgColor="white" />
-          <PercentageCard percentageTitle="Netral" percentage={positivePercentage} bgColor="brown" />
+          <PercentageCard percentageTitle="Netral" percentage={netralPercentage} bgColor="brown" />
           <PercentageCard percentageTitle="Negatif" percentage={negativePercentage} bgColor="maroon" />
         </div>
       </div>
@@ -64,6 +69,7 @@ function Summarize({
         <h3 className="sub-title-sm">Summarize</h3>
         <div className="text-content-sm">
           <SummarizeParagraf summarizeTitle="Positif" summarizeParaghraph={sentimentPositive} />
+          <SummarizeParagraf summarizeTitle="Netral" summarizeParaghraph={sentimentNetral} />
           <SummarizeParagraf summarizeTitle="Negatif" summarizeParaghraph={sentimentNegative} />
         </div>
       </div>
@@ -73,7 +79,7 @@ function Summarize({
         <h3 className="sub-title-sm">Top 5 Comment</h3>
         <div className="comments-list">
           {totalComments.map((c) => (
-            <TopReviewCard image={c.userImage} userName={c.userName} score={c.score} content={c.content} iconRate="material-symbols:star" />
+            <TopReviewCard image={c.userImage} userName={c.userName} score={c.rating} content={c.content} iconRate="material-symbols:star" />
           ))}
         </div>
       </div>

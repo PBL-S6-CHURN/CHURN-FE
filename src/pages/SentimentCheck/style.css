@@ -1,7 +1,7 @@
 .sentiment-check-container {
     display: flex;
     justify-content: center;
-    height: 80vh;
+    height: 70vh;
     flex-direction: column;
     width: 100%;
 }
@@ -13,8 +13,8 @@
 }
 
 .sentiment-icon-group .sentiment-icon{
-    width: 150px;
-    height: 150px;
+    width: 125px;
+    height: 125px;
 }
 
 .bad-icon {

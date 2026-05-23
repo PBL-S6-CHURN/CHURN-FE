@@ -38,7 +38,7 @@ function TambahCustomer({ adminData }) {
     fileInputRef.current.click();
   };
 
-  // 🎯 REALTIME STREAMING AI (SSE) SETELAH UPLOAD EXCEL SUKSES
+  // REALTIME STREAMING AI (SSE) SETELAH UPLOAD EXCEL SUKSES
   const startPredictStream = () => {
     setIsProcessingAI(true);
     setLoading(true);
@@ -136,7 +136,7 @@ function TambahCustomer({ adminData }) {
     try {
       // Tambah data manual otomatis mentrigger prediksi live di backend Anda
       await addCustomer(formData);
-      alert("🎉 Customer baru berhasil ditambahkan dan otomatis diprediksi oleh AI!");
+      alert("Customer baru berhasil ditambahkan dan otomatis diprediksi oleh AI!");
       navigate("/dashboard");
     } catch (error) {
       console.error(error);

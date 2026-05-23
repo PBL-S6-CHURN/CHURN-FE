@@ -29,7 +29,6 @@ export default function CustomerTable({customers, onViewDetail}) {
                 {Array.isArray(customers) && customers.length > 0 ? (
                         customers.map((row, index) => { 
                             // 1. Ambil ID unik untuk navigasi & React Key
-                            console.log("Isi data per baris:", row);
                             const uniqueId = row.id || row.customer_id || row.customer_code || `idx-${index}`;
                             
                             // 2. Antisipasi nama properti dari REST API maupun SSE Stream
@@ -44,7 +43,7 @@ export default function CustomerTable({customers, onViewDetail}) {
                                 : (row.prediction_results?.risk_score_pct || 0);
                                 
                             const riskLevel = row.risk || row.prediction_results?.risk_level || "UNKNOWN";
-                            const churnStatus = row.churn_status || row.prediction_results?.churn_status || "NO";
+                            const churnStatus = row.churn_status || row.prediction_results?.churn_status || (row.score == 1 ? "YES" : "NO");
 
                             return (
                                 <tr key={uniqueId}>
