@@ -5,12 +5,14 @@ import "./style.css";
 import PercentageCard from "../../components/SummarizeComponents/PercentageCard";
 import SummarizeParagraf from "../../components/SummarizeComponents/SummarizeParagraf";
 import TopReviewCard from "../../components/SummarizeComponents/TopReviewCard";
+import LoadingScreen from "../../components/LoadingScreen";
 
 function Summarize({
   onProfileClick,
   adminData,
   onNavChange,
 }) {
+  const [loading, setLoading] = useState(false);
   const [positivePercentage, setPositivePercentage] = useState(0);
   const [negativePercentage, setNegativePercentage] = useState(0);
   const [netralPercentage, setNetralPercentage] = useState(0);
@@ -20,9 +22,11 @@ function Summarize({
   const [totalComments, setTotalComments] = useState([]);
 
   const handleDataSummarize = async () => {
+    if (loading) return; 
+    
+    setLoading(true);
     try {
       const response = await getSummarizeData();
-      console.log(response.data);
       
       setPositivePercentage(response.data.percentage.positif);
       setNegativePercentage(response.data.percentage.negatif);
@@ -33,18 +37,14 @@ function Summarize({
       setTotalComments(response.data.top5Comments);
     } catch (err) {
       console.log(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     handleDataSummarize();
-  }, [
-    positivePercentage,
-    negativePercentage,
-    sentimentPositive,
-    sentimentNegative,
-    totalComments,
-  ]);
+  }, []);
 
   return (
     <MainLayout
@@ -54,6 +54,7 @@ function Summarize({
       adminData={adminData}
       onProfileClick={onProfileClick}
     >
+      {loading && <LoadingScreen message="Menganalisis ribuan ulasan pelanggan..." />}
       {/* Persentase Section */}
       <div className="summarize-section card-perc">
         <h3 className="sub-title-sm">Percentage</h3>
