@@ -7,6 +7,7 @@ import PredictBox from "../../components/CustomerDetailComponents/PredictBox";
 import ContactButton from "../../components/CustomerDetailComponents/ContactButton";
 import { useParams } from "react-router-dom";
 import { getCustomerById } from "../../api/customerApi";
+import LoadingScreen from "../../components/LoadingScreen";
 
 function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange }) {
   const { id } = useParams();
@@ -15,20 +16,25 @@ function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange }) {
 
   
   useEffect(() => {
-    const fetchDetail = async() => {
+    const fetchDetail = async () => {
+      setLoading(true)
+
       try {
         const response = await getCustomerById(id);
-        console.log(response.data.message);
         setCustomer(response.data.message);
-        console.log(response.data.message);
+
+        setTimeout(() => {
+          setLoading(false);
+        }, 700);
         
-        setLoading(false);
       } catch (error) {
         console.error(error);
+        setLoading(false);
       }
     }
 
     if (id) fetchDetail();
+    return () => setLoading(true);
   }, [id])
   
   if (loading || !customer) {
@@ -39,7 +45,7 @@ function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange }) {
         activeNav="dashboard"
         onNavChange={onNavChange}
       >
-        <div>Loading...</div>
+        <LoadingScreen message="Sedang Memproses" />
       </MainLayout>
     );
   }

@@ -1,9 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState,useEffect } from "react";
 import MainLayout from "../../layouts/MainLayout";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
 import { addCustomer, uploadCustomerExcel } from "../../api/customerApi";
 import { Icon } from "@iconify/react";
+import LoadingScreen from "../../components/LoadingScreen";
 
 function TambahCustomer({ adminData }) {
   const navigate = useNavigate();
@@ -33,6 +34,13 @@ function TambahCustomer({ adminData }) {
     monthly_revenue: 0,
     total_users: 0,
   });
+
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, [])
+  
 
   const handleExcelBtn = () => {
     fileInputRef.current.click();
@@ -95,6 +103,7 @@ function TambahCustomer({ adminData }) {
     try {
       // 1. Eksekusi Upload ke Postgres
       await uploadCustomerExcel(file);
+      setLoading(false);
       
       // 2. Tawarkan pengguna untuk eksekusi Prediksi AI otomatis
       const mauPrediksi = window.confirm(
@@ -109,11 +118,9 @@ function TambahCustomer({ adminData }) {
         navigate("/dashboard");
       }
     } catch (error) {
+      setLoading(false);
       alert(error?.message || "Gagal memproses file Excel.");
     } finally {
-      if (!isProcessingAI) {
-        setLoading(false);
-      }
       e.target.value = null; // Reset nilai input file
     }
   };
@@ -152,6 +159,7 @@ function TambahCustomer({ adminData }) {
       activeNav="add-customer"
       adminData={adminData}
     >
+      {loading && !isProcessingAI && <LoadingScreen message="Sedang Memproses" />}
       <section className="form-container">
         {/* JIKA SEDANG MEMPROSES SSE AI: Tampilkan Tampilan Progress Bar khusus */}
         {isProcessingAI ? (

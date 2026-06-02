@@ -11,6 +11,7 @@ import CustomerTable from "../../components/DashboardComponents/CustomerTable";
 import Pagination from "../../components/DashboardComponents/Pagination";
 import SearchInput from "../../components/DashboardComponents/SearchInput";
 import CustomSelect from "../../components/DashboardComponents/CustomSelect";
+import LoadingScreen from "../../components/LoadingScreen";
 
 function Dashboard({
   onProfileClick,
@@ -45,6 +46,8 @@ function Dashboard({
   const getData = async () => {
     if (loading) return;
     setLoading(true);
+
+    const startTime = Date.now();
     
     try {
       let response;
@@ -99,7 +102,15 @@ function Dashboard({
       setCustomers([]);
       setTotalPages(1);
     } finally {
-      setLoading(false);
+      // Hitung sisa waktu agar minimal loading tampil selama 600ms
+      const duration = Date.now() - startTime;
+      const minDuration = 600; 
+
+      if (duration < minDuration) {
+        setTimeout(() => setLoading(false), minDuration - duration);
+      } else {
+        setLoading(false);
+      }
     }
   };
 
@@ -137,6 +148,7 @@ function Dashboard({
 
   // --- SSE HANYA UNTUK UPDATE STATISTIK (CARD DI ATAS) ---
   useEffect(() => {
+    setLoading(true);
     console.log("🔌 Membuka koneksi SSE...");
     
     // Ambil data tabel pertama kali secara normal
@@ -189,6 +201,8 @@ function Dashboard({
       onViewDetail={onViewDetail}
       onProfileClick={onProfileClick}
     >
+      {/* buatkan loading */}
+      {loading && <LoadingScreen message="Sedang Memproses" />}
       {/* STATS, PLAN TYPE, TOOLS, TABLE */}
       <div className="stats-container">
         <div className="card churn-card">

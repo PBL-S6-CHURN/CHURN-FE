@@ -3,6 +3,7 @@ import logo from '../../assets/logoChurn.png';
 import MainLayout from '../../layouts/MainLayout';
 import { getProfile, updatePassword, updateProfile } from '../../api/userApi';
 import './style.css'
+import LoadingScreen from '../../components/LoadingScreen';
 
 function AdminProfile({ onLogout, onNavChange, onProfileClick }) {
   const fileInputRef = useRef(null);
@@ -44,7 +45,14 @@ function AdminProfile({ onLogout, onNavChange, onProfileClick }) {
         // Eksekusi fungsi API bawaan backend Anda yang membutuhkan 2 parameter
         await updatePassword(oldPassword, typedPassword);
         
-        alert("Password berhasil diperbarui!");
+        setTimeout(() => {
+          setLoading(false);
+          alert("Password berhasil diperbarui!");
+          setTypedPassword("");
+          setOldPassword("");
+          setPwStep(1);
+          setIsEditingPw(false);
+        }, 800);
         
         // Reset seluruh state alur password kembali ke default
         setTypedPassword("");
@@ -67,9 +75,16 @@ function AdminProfile({ onLogout, onNavChange, onProfileClick }) {
       setLoading(true);
       const result = await updateProfile(adminData.username, adminData.email, selectedFile);
 
-      alert("Profil berhasil diperbarui!");
+      setTimeout(() => {
+        setLoading(false);
+        alert("Profil berhasil diperbarui!");
+        if (selectedFile) {
+          setPreviewImage(URL.createObjectURL(selectedFile));
+        }
+        setSelectedFile(null);
+      }, 800);
 
-      // Opsional: Refresh halaman atau update ulang state data dari response server jika ada rute image baru
+      // Opsional: Refresh hal  aman atau update ulang state data dari response server jika ada rute image baru
       if(selectedFile) {
         setPreviewImage(URL.createObjectURL(selectedFile));
       } else if (result?.data?.profile_image) {
@@ -97,19 +112,16 @@ function AdminProfile({ onLogout, onNavChange, onProfileClick }) {
           setAdminData(userData);
 
           if (userData.profile_image) {
-
             const finalImageUrl = `http://localhost:8000/${userData.profile_image}`;
-            
             setPreviewImage(finalImageUrl);
           }
         }
 
         // setTempPw(userData.password || "");
         setLoading(false);
-
+        setTimeout(() => setLoading(false), 700);
       } catch (err) {
         console.log(err);
-      } finally {
         setLoading(false);
       }
     }
@@ -118,12 +130,10 @@ function AdminProfile({ onLogout, onNavChange, onProfileClick }) {
   }, []);
 
   // Tampilan Loading
-  if (loading) {
+  if (loading && !adminData.username) {
     return (
       <MainLayout title="Profil Admin" activeNav="profile" onNavChange={onNavChange} onLogout={onLogout} adminData={adminData} onProfileClick={onProfileClick} >
-        <div style={{ textAlign: 'center', marginTop: '50px', color: '#630000' }}>
-          <h3>Memuat data profil...</h3>
-        </div>
+        <LoadingScreen message='Sedang Memproses' />
       </MainLayout>
     );
   }
