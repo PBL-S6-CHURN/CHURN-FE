@@ -119,7 +119,8 @@ function TambahCustomer({ adminData }) {
       }
     } catch (error) {
       setLoading(false);
-      alert(error?.message || "Gagal memproses file Excel.");
+      const errorMessage = error.response?.data?.message || "Gagal memproses file Excel.";
+      alert(`Error Upload: ${errorMessage}`);
     } finally {
       e.target.value = null; // Reset nilai input file
     }
@@ -147,7 +148,9 @@ function TambahCustomer({ adminData }) {
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || "Gagal menambahkan data customer.");
+      // MENGAMBIL PESAN ERROR DARI BACKEND (Misal: "Customer with id C-0001 already exist")
+      const errorMessage = error.response?.data?.message || "Gagal menambahkan data customer.";
+      alert(`Gagal: ${errorMessage}`);
     } finally {
       setLoading(false);
     }

@@ -17,7 +17,7 @@ export default function SentimentResult({sentiment, probability, explainable, ic
             </div>
         </div>
         <div className="sentiment-result-item">
-            <label className="sentiment-result-label">Expanable</label>
+            <label className="sentiment-result-label">Explainable</label>
             <div className="sentiment-result-value">
                 <p>{explainable}</p>
             </div>
