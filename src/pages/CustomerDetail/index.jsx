@@ -52,7 +52,7 @@ function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange }) {
 
   const breadcrumbContent = (
     <div className="breadcrumb-wrapper">
-      <span onClick={onBack}>Detail_{customer.customer_id}</span>
+      <span onClick={onBack}>Detail User</span> 
     </div>
   );
 
@@ -107,7 +107,7 @@ function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange }) {
 
         {/* CONTACT ACTIONS */}
         <div className="contact-section">
-          <h2 className="contact-header">Contact</h2>
+          <h2 className="contact-header">Contact Us</h2>
           <div className="contact-btn-group">
             <ContactButton
               icon="ic:baseline-whatsapp"

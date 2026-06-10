@@ -1,39 +1,47 @@
 import React from 'react'
+import { generatePaginationRange } from '../../helper/generationPagination';
 
-export default function Pagination({currentPage, totalPages, setCurrentPage }) {
+export default // Contoh implementasi di dalam komponen Pagination Anda
+function Pagination({ currentPage, totalPages, setCurrentPage }) {
+    // Panggil fungsi generator range di sini
+    const paginationRange = generatePaginationRange(currentPage, totalPages);
+
     return (
-        <div className="pagination-new">
-            <div className="pages">
-                <span
-                    className="nav-arrow"
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    style={{ cursor: "pointer" }}
-                >
-                    ‹
-                </span>
-            {[...Array(totalPages)].map((_, i) => (
-                <span
-                key={i + 1}
-                onClick={() => setCurrentPage(i + 1)}
-                className={currentPage === i + 1 ? "active-p" : ""}
-                style={{ cursor: "pointer" }}
-                >
-                {i + 1}
-                </span>
-            ))}
-            <span
-                className="nav-arrow"
-                onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                style={{ cursor: "pointer" }}
+        <div className="pagination-wrapper">
+            {/* Tombol Previous */}
+            <button 
+                disabled={currentPage === 1} 
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                className="pagination-arrow"
             >
-                ›
-            </span>
-            </div>
-            <div className="page-info">
-                Page {currentPage} of {totalPages || 1}
-            </div>
+                &laquo; Prev
+            </button>
+
+            {/* Looping nomor halaman yang sudah dipotong */}
+            {paginationRange.map((page, index) => {
+                if (page === '...') {
+                return <span key={`dots-${index}`} className="pagination-dots">...</span>;
+                }
+
+                return (
+                <button
+                    key={`page-${page}`}
+                    onClick={() => setCurrentPage(page)}
+                    className={`pagination-number ${currentPage === page ? 'active' : ''}`}
+                >
+                    {page}
+                </button>
+                );
+            })}
+
+            {/* Tombol Next */}
+            <button 
+                disabled={currentPage === totalPages} 
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                className="pagination-arrow"
+            >
+                Next &raquo;
+            </button>
         </div>
-    )
+    );
 }
