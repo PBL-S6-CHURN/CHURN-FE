@@ -119,8 +119,11 @@ function TambahCustomer({ adminData }) {
       }
     } catch (error) {
       setLoading(false);
-      const errorMessage = error.response?.data?.message || "Gagal memproses file Excel.";
-      alert(`Error Upload: ${errorMessage}`);
+      const serverMessage = error
+      const finalMessage = serverMessage || "Gagal memproses file Excel.";
+      
+      alert(`Error Upload: ${finalMessage}`);
+      console.error("Detail Error Upload:", error.response?.data);
     } finally {
       e.target.value = null; // Reset nilai input file
     }
@@ -167,7 +170,7 @@ function TambahCustomer({ adminData }) {
         {/* JIKA SEDANG MEMPROSES SSE AI: Tampilkan Tampilan Progress Bar khusus */}
         {isProcessingAI ? (
           <div className="sse-progress-box" style={{ padding: "24px", background: "#f0f7ff", borderRadius: "8px", border: "1px solid #d0e7ff", textAlign: "center" }}>
-            <h3 style={{ margin: "0 0 12px 0", color: "#0056b3" }}>🤖 AI Machine Learning Processing...</h3>
+            <h3 style={{ margin: "0 0 12px 0", color: "#0056b3" }}>AI Machine Learning Processing...</h3>
             
             {/* Progress Bar Track */}
             <div style={{ width: "100%", background: "#e0e0e0", borderRadius: "10px", height: "16px", overflow: "hidden", marginBottom: "12px" }}>

@@ -50,7 +50,7 @@ export default function Sidebar() {
     },
     {
       id: "/add-customer",
-      label: "Tambah Customer",
+      label: "Add Customer",
       icon: (
         <Icon
           icon="material-symbols:person-add-outline"

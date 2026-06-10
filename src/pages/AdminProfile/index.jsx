@@ -120,7 +120,7 @@ function AdminProfile({ onLogout, onNavChange, onProfileClick }) {
   if (loading && !adminData.username) {
     return (
       <MainLayout title="Profil Admin" activeNav="profile" onNavChange={onNavChange} onLogout={onLogout} adminData={adminData} onProfileClick={onProfileClick} >
-        <LoadingScreen message='Sedang Memproses' />
+        <LoadingScreen message='Progress...' />
       </MainLayout>
     );
   }
@@ -134,7 +134,7 @@ function AdminProfile({ onLogout, onNavChange, onProfileClick }) {
       adminData={adminData}
       onProfileClick={onProfileClick}
     >
-      {loading && <LoadingScreen message='Sedang Memproses' />}
+      {loading && <LoadingScreen message='Progress' />}
       <div className="card-profile">
         <div className="profile-section">
           <div className='profile-avatar-wrapper'>

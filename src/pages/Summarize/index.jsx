@@ -54,7 +54,7 @@ function Summarize({
       adminData={adminData}
       onProfileClick={onProfileClick}
     >
-      {loading && <LoadingScreen message="Menganalisis ribuan ulasan pelanggan..." />}
+      {loading && <LoadingScreen message="Analyzing thousands of customer reviews..." />}
       {/* Persentase Section */}
       <div className="summarize-section card-perc">
         <h3 className="sub-title-sm">Percentage</h3>

@@ -202,7 +202,7 @@ function Dashboard({
       onProfileClick={onProfileClick}
     >
       {/* buatkan loading */}
-      {loading && <LoadingScreen message="Sedang Memproses" />}
+      {loading && <LoadingScreen message="Progress..." />}
       {/* STATS, PLAN TYPE, TOOLS, TABLE */}
       <div className="stats-container">
         <div className="card churn-card">

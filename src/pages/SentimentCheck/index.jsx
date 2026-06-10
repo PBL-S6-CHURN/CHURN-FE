@@ -61,7 +61,7 @@ export default function SentimentCheck({
             onNavChange={onNavChange}
             onProfileClick={onProfileClick}
         >
-            {loading && <LoadingScreen message="AI sedang membedah makna kalimat Anda..." />}
+            {loading && <LoadingScreen message="AI is dissecting the meaning of your sentence..." />}
             <div className="sentiment-check-container">
                 <div className="sentiment-icon-group">
                     <SentimentSadIcon className="sentiment-icon bad-icon" />
@@ -72,7 +72,7 @@ export default function SentimentCheck({
                     <form onSubmit={handleCheckSentiment}>
                         <div className="input-group">
                         <label style={{ fontSize: "0.8rem", color: "#888" }}>
-                            Tuliskan Sentiment
+                            Write Sentiment
                         </label>
                         <input
                             type="text"
@@ -88,7 +88,7 @@ export default function SentimentCheck({
                         type="submit"
                         style={{ width: "100%", borderRadius: "8px" }}
                         >
-                        Cek aja
+                            Just Check
                         </button>
                     </form>
                 </div>
@@ -98,7 +98,7 @@ export default function SentimentCheck({
                         style={{ textAlign: "center", marginTop: "20px" }}
                     >
                         <p style={{ color: "#630000", fontWeight: "bold" }}>
-                        AI sedang menganalisis kalimat Anda...
+                            AI is analyzing your sentences...
                         </p>
                     </div>
                 )}

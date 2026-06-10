@@ -45,7 +45,7 @@ function CustomerDetail({ onBack, adminData, onProfileClick, onNavChange }) {
         activeNav="dashboard"
         onNavChange={onNavChange}
       >
-        <LoadingScreen message="Sedang Memproses" />
+        <LoadingScreen message="Progress..." />
       </MainLayout>
     );
   }
