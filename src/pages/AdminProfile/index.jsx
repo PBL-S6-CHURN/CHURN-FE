@@ -149,12 +149,12 @@ function AdminProfile({ onLogout, onNavChange, onProfileClick }) {
               )}
             </div>
             <input type="file" ref={fileInputRef} onChange={handlePhotoUpload} style={{ display: 'none' }} accept="image/*" />
-            <p className='title-upload'>Klik untuk Ganti Foto</p>
+            <p className='title-upload'>Click for Change Photo</p>
           </div>
           <div className="profile-info">
             <form onSubmit={handleSaveChanges}>
               <div className='input-group'>
-                <label style={{ fontSize: '0.8rem', color: '#888' }}>Nama Admin</label>
+                <label style={{ fontSize: '0.8rem', color: '#888' }}>Username</label>
                 <input 
                   type="text" 
                   className="filter-select" 
@@ -187,7 +187,7 @@ function AdminProfile({ onLogout, onNavChange, onProfileClick }) {
                   style={{ flex: 1, margin: 0, borderRadius: '8px' }}
                   onClick={() => alert("Perubahan Nama & Foto Berhasil!")}
                 >
-                  Simpan Perubahan
+                  Saves Changes
                 </button>
                 
                 {isEditingPw ? (
@@ -196,7 +196,7 @@ function AdminProfile({ onLogout, onNavChange, onProfileClick }) {
                     style={{ flex: 1, border: '1px solid #630000', borderRadius: '8px', background: '#630000', color: 'white' }}
                     onClick={savePassword}
                   >
-                    Konfirmasi Password Baru
+                    Confirmation New Password
                   </button>
                 ) : (
                   <button 
@@ -204,7 +204,7 @@ function AdminProfile({ onLogout, onNavChange, onProfileClick }) {
                     style={{ flex: 1, border: '1px solid #630000', borderRadius: '8px' }}
                     onClick={() => setIsEditingPw(true)}
                   >
-                    Ubah Password
+                    Change Password
                   </button>
                 )}
               </div>

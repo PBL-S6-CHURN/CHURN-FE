@@ -163,7 +163,7 @@ function Dashboard({
         getStatsData();
       },
       (error) => {
-        console.error("Koneksi stream terputus.");
+        console.error("Koneksi stream terputus.", error);
       }
     );
 
