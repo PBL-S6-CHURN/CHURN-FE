@@ -1,0 +1,104 @@
+* {
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box;
+  border: none; 
+  outline: none;
+}
+
+html, body, #root {
+  width: 100%; 
+  height: 100%; 
+  overflow: hidden;
+  background-color: white;
+}
+
+/* Wrapper  */
+
+/*Logo*/
+.logo-container {
+  margin-bottom: 35px; 
+}
+
+.logo-circle {
+  background-color: white;
+  width: 120px; 
+  height: 120px;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.logo-circle img {
+  width: 90%; 
+  height: auto;
+}
+
+.forgot-password {
+  display: block;
+  font-size: 0.7rem;
+  color: #ccc;
+  text-decoration: none;
+  margin-top: 4px;
+}
+
+.footer-text {
+  margin-top: 15px; 
+  font-size: 0.75rem;
+  color: #ccc;
+}
+
+.footer-text a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* DASHBOARD  */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", "sans-serif"
+}
+
+body, html, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .stats-container { grid-template-columns: 1fr; }
+  .sidebar-new { width: 80px; }
+  .sidebar-new p, .sidebar-new .brand-name { display: none; }
+}
+
+.logo-img {
+  width: 150px;
+  margin-bottom: 15px;
+}
+
+/* MAIN CONTENT */
+.avatar {
+  width: 35px;
+  height: 35px;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive*/
+@media (max-width: 1024px) {
+  .detail-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
