@@ -72,8 +72,7 @@ export default function Router({
           </ProtectedRoute>
         }
       />
-
-      {/* <Route
+      <Route
         path="/add-customer"
         element={
           <ProtectedRoute>
@@ -82,7 +81,7 @@ export default function Router({
             />
           </ProtectedRoute>
         }
-      /> */}
+      />
 
       <Route
         path="/detail/:id"

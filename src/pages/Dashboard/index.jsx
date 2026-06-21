@@ -1,7 +1,16 @@
 import { useState, useEffect } from "react";
-import MainLayout from "../../layouts/MainLayout/";
+import MainLayout from "../../layouts/MainLayout";
 import "./style.css";
-import { getCustomerChurnStats, getCustomerRetentionStats, getCustomerRiskStats, getCustomers, getCustomersByType, getCustomerStats, searchCustomers, streamCustomerPredictions } from "../../api/customerApi";
+import {
+  getCustomerChurnStats,
+  getCustomerRetentionStats,
+  getCustomerRiskStats,
+  getCustomers,
+  getCustomersByType,
+  getCustomerStats,
+  searchCustomers,
+  streamCustomerPredictions,
+} from "../../api/customerApi";
 
 // kompulan component
 import ChurnStatusCountCard from "../../components/DashboardComponents/ChurnStatusCountCard";
@@ -13,12 +22,7 @@ import SearchInput from "../../components/DashboardComponents/SearchInput";
 import CustomSelect from "../../components/DashboardComponents/CustomSelect";
 import LoadingScreen from "../../components/LoadingScreen";
 
-function Dashboard({
-  onProfileClick,
-  adminData,
-  onViewDetail,
-  onNavChange
-}) {
+function Dashboard({ onProfileClick, adminData, onViewDetail, onNavChange }) {
   const [customers, setCustomers] = useState([]);
   const [planStats, setPlanStats] = useState([]);
   const [churnStats, setChurnStats] = useState({ stayed: 0, churned: 0 });
@@ -48,7 +52,7 @@ function Dashboard({
     setLoading(true);
 
     const startTime = Date.now();
-    
+
     try {
       let response;
       if (searchTerm) {
@@ -60,7 +64,7 @@ function Dashboard({
       } else {
         response = await getCustomers(currentPage);
       }
-  
+
       // Ambil Array Customer (Menangani dua versi struktur backend)
       let rawCustomers = [];
       if (response.data?.message?.customers) {
@@ -68,29 +72,43 @@ function Dashboard({
       } else if (Array.isArray(response.data)) {
         rawCustomers = response.data;
       }
-  
+
       // Ambil Metadata Pagination
-      const totalPagesFromMeta = response.metadata?.total_pages || response.data?.message?.totalPages || 1;
-  
+      const totalPagesFromMeta =
+        response.metadata?.total_pages ||
+        response.data?.message?.totalPages ||
+        1;
+
       if (rawCustomers.length > 0) {
         const normalizedCustomers = rawCustomers.map((customer) => {
           // Ambil objek prediksi jika ada (untuk Normal View)
           const prediction = customer.prediction_results || {};
           console.log(prediction);
-          const isChurn = (customer.score == 1) || (prediction.score == 1);
-          console.log(`ID: ${customer.customer_id} | Root Score: ${customer.score} | Pred Score: ${prediction.score}`);
-          
+          const isChurn = customer.score == 1 || prediction.score == 1;
+          console.log(
+            `ID: ${customer.customer_id} | Root Score: ${customer.score} | Pred Score: ${prediction.score}`
+          );
+
           return {
             ...customer,
             customer_id: customer.customer_id || customer.customer_code,
             risk: customer.risk || prediction.risk_level || "UNKNOWN",
             churn: isChurn == 1 ? "YES" : "NO",
-            risk_score: customer.risk_score !== undefined ? customer.risk_score : (prediction.risk_score_pct || 0), 
-            cause: customer.cause || (prediction.churn_factors ? prediction.churn_factors.join(", ") : ""),
-            solution: customer.solution || (prediction.solutions ? prediction.solutions.join(", ") : "")
+            risk_score:
+              customer.risk_score !== undefined
+                ? customer.risk_score
+                : prediction.risk_score_pct || 0,
+            cause:
+              customer.cause ||
+              (prediction.churn_factors
+                ? prediction.churn_factors.join(", ")
+                : ""),
+            solution:
+              customer.solution ||
+              (prediction.solutions ? prediction.solutions.join(", ") : ""),
           };
         });
-  
+
         setCustomers(normalizedCustomers);
         setTotalPages(totalPagesFromMeta);
       } else {
@@ -104,7 +122,7 @@ function Dashboard({
     } finally {
       // Hitung sisa waktu agar minimal loading tampil selama 600ms
       const duration = Date.now() - startTime;
-      const minDuration = 600; 
+      const minDuration = 600;
 
       if (duration < minDuration) {
         setTimeout(() => setLoading(false), minDuration - duration);
@@ -126,7 +144,7 @@ function Dashboard({
         const summary = churnRes.data.message.summary;
         setChurnStats({
           stayed: summary.not_churn || 0, // not_churn dipetakan ke Stayed
-          churned: summary.churn || 0     // churn dipetakan ke Churned
+          churned: summary.churn || 0, // churn dipetakan ke Churned
         });
       }
 
@@ -136,21 +154,20 @@ function Dashboard({
         setRiskStats({
           low: riskRes.data.summary.low || 0,
           medium: riskRes.data.summary.medium || 0,
-          high: riskRes.data.summary.high || 0
+          high: riskRes.data.summary.high || 0,
         });
       }
     } catch (error) {
       // Melempar error agar bisa ditangkap oleh komponen UI
       console.error("Gagal memuat statistik database:", error);
     }
-  }
-
+  };
 
   // --- SSE HANYA UNTUK UPDATE STATISTIK (CARD DI ATAS) ---
   useEffect(() => {
     setLoading(true);
     console.log("🔌 Membuka koneksi SSE...");
-    
+
     // Ambil data tabel pertama kali secara normal
     getData();
 
@@ -191,7 +208,6 @@ function Dashboard({
     return () => clearTimeout(delayDebounce);
   }, [currentPage, searchTerm, selectedType, selectedRisk]);
 
-
   return (
     <MainLayout
       title="Dashboard"
@@ -208,17 +224,37 @@ function Dashboard({
         <div className="card churn-card">
           <h3>Churn Status</h3>
           <div className="churn-content">
-            <ChurnStatusCountCard styleCard="churn-box-white" titleCount="Stayed" countChurn={churnStats.stayed} />
-            <ChurnStatusCountCard styleCard="churn-box-maroon" titleCount="Churned" countChurn={churnStats.churned} />
+            <ChurnStatusCountCard
+              styleCard="churn-box-white"
+              titleCount="Stayed"
+              countChurn={churnStats.stayed}
+            />
+            <ChurnStatusCountCard
+              styleCard="churn-box-maroon"
+              titleCount="Churned"
+              countChurn={churnStats.churned}
+            />
           </div>
         </div>
         <div class="risk-card">
           <div class="risk-header">Risk Category Count</div>
 
           <div class="risk-sections-container">
-            <RiskCountChurn colorRisk="low" titleRisk="Low" countRisk={riskStats.low} />
-            <RiskCountChurn colorRisk="medium" titleRisk="Medium" countRisk={riskStats.medium} />
-            <RiskCountChurn colorRisk="high" titleRisk="High" countRisk={riskStats.high} />
+            <RiskCountChurn
+              colorRisk="low"
+              titleRisk="Low"
+              countRisk={riskStats.low}
+            />
+            <RiskCountChurn
+              colorRisk="medium"
+              titleRisk="Medium"
+              countRisk={riskStats.medium}
+            />
+            <RiskCountChurn
+              colorRisk="high"
+              titleRisk="High"
+              countRisk={riskStats.high}
+            />
           </div>
         </div>
       </div>
@@ -226,18 +262,41 @@ function Dashboard({
       <div className="card plan-card-new">
         <h3>Plan Type Category</h3>
         {planStats.map((plan) => (
-          <PlanPercentageCard plan_name={plan.plan_name} total_count={plan.total_count} percentage={plan.percentage} />
+          <PlanPercentageCard
+            plan_name={plan.plan_name}
+            total_count={plan.total_count}
+            percentage={plan.percentage}
+          />
         ))}
       </div>
 
       <div className="table-header-tools" style={{ marginTop: "50px" }}>
-        <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} setCurrentPage={setCurrentPage} iconSearch="material-symbols:search" />
-        <CustomSelect value={selectedType} onChange={(e) => setSelectedType(e.target.value)} options={planOptions} defaultLabel="Filter by Plan Type" />
-        <CustomSelect value={selectedRisk} onChange={(e) => setSelectedRisk(e.target.value)} options={riskOptions} defaultLabel="Filter by Risk" />
+        <SearchInput
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          setCurrentPage={setCurrentPage}
+          iconSearch="material-symbols:search"
+        />
+        <CustomSelect
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value)}
+          options={planOptions}
+          defaultLabel="Filter by Plan Type"
+        />
+        <CustomSelect
+          value={selectedRisk}
+          onChange={(e) => setSelectedRisk(e.target.value)}
+          options={riskOptions}
+          defaultLabel="Filter by Risk"
+        />
       </div>
 
       <CustomerTable customers={customers} onViewDetail={onViewDetail} />
-      <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        setCurrentPage={setCurrentPage}
+      />
     </MainLayout>
   );
 }

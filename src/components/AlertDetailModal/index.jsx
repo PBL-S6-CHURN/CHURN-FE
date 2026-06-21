@@ -80,7 +80,7 @@ export default function AlertDetailModal({ isOpen, alertId, onClose, onRefreshDa
                         <div className="section-divider">Prediction Result</div>
                         <div className="info-grid predict">
                             <InfoItem label="Prediction" value={ai_prediction_analysis.risk_level} />
-                            <InfoItem label="Probability" value={`${ai_prediction_analysis.risk_score_pct}%`} />
+                            <InfoItem label="Probability" value={`${ai_prediction_analysis.platt_score_pct}%`} />
                             <InfoItem label="Diagnostic" value={ai_prediction_analysis.churn_factors?.join(", ") || "Normal"} />
                             <InfoItem label="Solution" value={ai_prediction_analysis.solutions?.join(", ") || "No action needed"} />
                         </div>

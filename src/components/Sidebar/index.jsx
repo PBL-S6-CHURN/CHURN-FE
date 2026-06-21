@@ -48,18 +48,18 @@ export default function Sidebar() {
         />
       ),
     },
-    // {
-    //   id: "/add-customer",
-    //   label: "Add Customer",
-    //   icon: (
-    //     <Icon
-    //       icon="material-symbols:person-add-outline"
-    //       width="22"
-    //       height="22"
-    //       color="#630000"
-    //     />
-    //   ),
-    // },
+    {
+      id: "/add-customer",
+      label: "Add Customer",
+      icon: (
+        <Icon
+          icon="material-symbols:person-add-outline"
+          width="22"
+          height="22"
+          color="#630000"
+        />
+      ),
+    },
     {
       id: "/summarize",
       label: "Summarize",
