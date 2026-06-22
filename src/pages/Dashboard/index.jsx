@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import MainLayout from "../../layouts/MainLayout";
 import "./style.css";
 import {
+  getChurnChart,
   getCustomerChurnStats,
   getCustomerRetentionStats,
   getCustomerRiskStats,
@@ -24,6 +25,8 @@ import LoadingScreen from "../../components/LoadingScreen";
 
 function Dashboard({ onProfileClick, adminData, onViewDetail, onNavChange }) {
   const [customers, setCustomers] = useState([]);
+  const [chartImage, setChartImage] = useState(null);
+  const [chartLoading, setChartLoading] = useState(false);
   const [planStats, setPlanStats] = useState([]);
   const [churnStats, setChurnStats] = useState({ stayed: 0, churned: 0 });
   const [riskStats, setRiskStats] = useState({ low: 0, medium: 0, high: 0 });
@@ -132,6 +135,22 @@ function Dashboard({ onProfileClick, adminData, onViewDetail, onNavChange }) {
     }
   };
 
+  const getChartData = async () => {
+    setChartLoading(true);
+    try {
+      const res = await getChurnChart();
+      console.log(res);
+      if (res && res.image) {
+        setChartImage(res.image); 
+      }
+    } catch (error) {
+      console.error("Error mengambil data:", error);
+      setChartImage(null);
+    } finally {
+      setChartLoading(false);
+    }
+  }
+
   const getStatsData = async () => {
     try {
       const planRes = await getCustomerStats();
@@ -170,6 +189,7 @@ function Dashboard({ onProfileClick, adminData, onViewDetail, onNavChange }) {
 
     // Ambil data tabel pertama kali secara normal
     getData();
+    getChartData();
 
     const closeStream = streamCustomerPredictions(
       (newData) => {
@@ -219,6 +239,22 @@ function Dashboard({ onProfileClick, adminData, onViewDetail, onNavChange }) {
     >
       {/* buatkan loading */}
       {loading && <LoadingScreen message="Progress..." />}
+      <div className="card chart-card" style={{ marginTop: "30px", padding: "20px", background: "#fff", borderRadius: "8px" }}>
+        <h3 style={{ marginBottom: "15px" }}>Churn Prediction Chart</h3>
+        {chartLoading ? (
+          <p>Memuat grafik chart...</p>
+        ) : chartImage ? (
+          <div style={{ textAlign: "center" }}>
+            <img 
+              src={chartImage} 
+              alt="Churn Data Chart" 
+              style={{ width: "100%", maxHeight: "400px", objectFit: "contain" }} 
+            />
+          </div>
+        ) : (
+          <p>Grafik chart tidak tersedia.</p>
+        )}
+      </div>
       {/* STATS, PLAN TYPE, TOOLS, TABLE */}
       <div className="stats-container">
         <div className="card churn-card">

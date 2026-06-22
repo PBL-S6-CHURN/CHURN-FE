@@ -23,6 +23,25 @@ export const getCustomers = async (page = 1) => {
   }
 };
 
+export const getChurnChart = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await api.get("/churn-chart", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    // Melempar error agar bisa ditangkap oleh komponen UI
+    throw (
+      error.response?.data?.message ||
+      "Terjadi kesalahan saat mengambil data pelanggan"
+    );
+  }
+}
+
 export const getCustomerStats = async () => {
   try {
     const token = localStorage.getItem("token");

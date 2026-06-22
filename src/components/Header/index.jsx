@@ -137,7 +137,7 @@ export default function Header({ title, adminData, onViewDetail }) {
         )}
 
         <span className="profile-svg">
-          {adminData?.profile_image ? (
+          {adminData?.profile_image !== null ? (
             <img src={`http://localhost:8000/${adminData.profile_image}`} className="avatar-img-small" alt="p" onClick={() => navigate("/profile")} />
           ) : (
             <Icon
